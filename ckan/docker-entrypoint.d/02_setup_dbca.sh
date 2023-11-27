@@ -7,13 +7,13 @@ if [[ $CKAN__PLUGINS == *"xloader"* ]]; then
 fi
 
 ## Examples of how to initialise DB for the extensions
-# if [[ $CKAN__PLUGINS == *"archiver"* ]]; then
-#     ckan -c $CKAN_INI archiver init
-# fi
+if [[ $CKAN__PLUGINS == *"archiver"* ]]; then
+    ckan -c $CKAN_INI archiver init
+fi
 
-# if [[ $CKAN__PLUGINS == *"report"* ]]; then
-#     ckan -c $CKAN_INI report initdb
-# fi
+if [[ $CKAN__PLUGINS == *"report"* ]]; then
+    ckan -c $CKAN_INI report initdb
+fi
 
 # if [[ $CKAN__PLUGINS == *"harvest"* ]]; then
 #     ckan -c $CKAN_INI db upgrade -p harvest

@@ -8,9 +8,9 @@ cd src/
 
 ## Must Have ##
 # QA
-# git clone https://github.com/dbca-wa/ckanext-qa.git
-# These extensions will be installed by default, but we don't want them
-# sed -i".$(date +%Y%m%d_%H%M%S).bak" -e '/ckanext-report/d' -e '/ckanext-archiver/d' ckanext-qa/dev-requirements.txt
+git clone https://github.com/dbca-wa/ckanext-qa.git
+#These extensions will be installed by default, but we don't want them
+sed -i".$(date +%Y%m%d_%H%M%S).bak" -e '/ckanext-report/d' -e '/ckanext-archiver/d' ckanext-qa/dev-requirements.txt
 # Office Docs
 # git clone https://github.com/dbca-wa/ckanext-officedocs
 

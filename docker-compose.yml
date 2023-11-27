@@ -21,6 +21,8 @@ services:
         condition: service_healthy
     ports:
       - "0.0.0.0:${NGINX_SSLPORT_HOST}:${NGINX_SSLPORT}"
+    volumes:
+      - ckan_storage:/var/lib/ckan
     
   ckan:
     container_name: ${CKAN_CONTAINER_NAME}
