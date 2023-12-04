@@ -1,11 +1,9 @@
 FROM ckan/ckan-base:2.10.1
 
 # Install qsv dependency for extension ckanext-qa
-RUN wget https://github.com/jqnatividad/qsv/releases/download/0.110.0/qsv-0.110.0-x86_64-unknown-linux-musl.zip && \
-    unzip qsv-0.110.0-x86_64-unknown-linux-musl.zip -d /tmp/qsv && \
-    rm qsv-0.110.0-x86_64-unknown-linux-musl.zip  && \
-    mv /tmp/qsv/qsv /usr/local/bin && \
-    rm -rf /tmp/qsv
+RUN wget -O /tmp/qsv.zip https://github.com/jqnatividad/qsv/releases/download/0.110.0/qsv-0.110.0-x86_64-unknown-linux-musl.zip && \
+    unzip /tmp/qsv.zip -d /usr/local/bin && \
+    rm /tmp/qsv.zip
 
 # Install any extensions needed by your CKAN instance
 # See Dockerfile.dev for more details and examples
