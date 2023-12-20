@@ -35,6 +35,13 @@ pip3 install -r ${SRC_DIR}/ckanext-showcase/requirements.txt
 pip3 install -e 'git+https://github.com/ckan/ckanext-scheming.git@release-3.0.0#egg=ckanext-scheming'
 
 # Spatial
+# dependencies
+export PROJ_DIR=/usr
+apk add --no-cache \
+    geos \
+    geos-dev \
+    proj-util \
+    proj-dev 
 pip3 install -e git+https://github.com/ckan/ckanext-spatial.git@v2.1.1#egg=ckanext-spatial
 pip3 install -r ${SRC_DIR}/ckanext-spatial/requirements.txt
 
