@@ -7,6 +7,8 @@
 cd src/
 
 ## Must Have ##
+git clone https://github.com/dbca-wa/ckanext-dbca.git
+
 # QA
 # git clone https://github.com/dbca-wa/ckanext-qa.git
 # These extensions will be installed by default, but we don't want them
