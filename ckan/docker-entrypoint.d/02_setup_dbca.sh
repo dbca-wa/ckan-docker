@@ -22,3 +22,7 @@ fi
 if [[ $CKAN__PLUGINS == *"pages"* ]]; then
     ckan -c $CKAN_INI pages initdb
 fi
+
+if [[ $CKAN__PLUGINS == *"doi"* ]]; then
+    ckan -c $CKAN_INI doi initdb
+fi
