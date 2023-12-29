@@ -49,6 +49,9 @@ pip3 install -r ${SRC_DIR}/ckanext-spatial/requirements.txt
 pip3 install -e 'git+https://github.com/ckan/ckanext-xloader.git@1.0.1#egg=ckanext-xloader'
 pip3 install -r ${SRC_DIR}/ckanext-xloader/requirements.txt
 
+# Geoview
+pip3 install -e 'git+https://github.com/ckan/ckanext-geoview.git@v0.1.0#egg=ckanext-geoview'
+
 # 3rd Party #
 # DOI
 pip3 install -e git+https://github.com/NaturalHistoryMuseum/ckanext-doi@v3.1.9#egg=ckanext-doi
