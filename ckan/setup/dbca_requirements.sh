@@ -51,4 +51,4 @@ pip3 install -r ${SRC_DIR}/ckanext-xloader/requirements.txt
 
 # 3rd Party #
 # DOI
-pip3 install -e git+https://github.com/NaturalHistoryMuseum/ckanext-doi@v3.1.9#egg=ckanext-doi
+pip3 install -e git+https://github.com/NaturalHistoryMuseum/ckanext-doi@v3.1.10#egg=ckanext-doi
