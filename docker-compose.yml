@@ -16,6 +16,8 @@ services:
     networks:
       - webnet
       - ckannet
+    env_file:
+      - .env
     depends_on:
       ckan:
         condition: service_healthy

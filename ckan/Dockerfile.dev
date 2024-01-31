@@ -1,4 +1,4 @@
-FROM ckan/ckan-dev:2.10.1
+FROM ckan/ckan-dev:2.10.3
 
 # Install any extensions needed by your CKAN instance
 # - Make sure to add the plugins to CKAN__PLUGINS in the .env file
@@ -31,19 +31,11 @@ FROM ckan/ckan-dev:2.10.1
 #RUN  pip3 install -e git+https://github.com/ckan/ckanext-dcat.git@v0.0.6#egg=ckanext-dcat && \
 #     pip3 install -r https://raw.githubusercontent.com/ckan/ckanext-dcat/v0.0.6/requirements.txt
 
-# Install qsv dependency for extension ckanext-qa
-RUN wget -O /tmp/qsv.zip https://github.com/jqnatividad/qsv/releases/download/0.110.0/qsv-0.110.0-x86_64-unknown-linux-musl.zip && \
-    unzip /tmp/qsv.zip -d /usr/local/bin && \
-    rm /tmp/qsv.zip
-    
 # Install any extensions needed by your CKAN instance
 COPY setup/dbca_requirements.sh ${APP_DIR}
 RUN pip3 install pip --upgrade && \
     chmod +x ${APP_DIR}/dbca_requirements.sh && \
     ${APP_DIR}/dbca_requirements.sh
-
-COPY setup/dbca_start_ckan_development.sh.override ${APP_DIR}/start_ckan_development.sh
-RUN  chmod +x ${APP_DIR}/start_ckan_development.sh
 
 # Clone the extension(s) your are writing for your own project in the `src` folder
 # to get them mounted in this image at runtime
@@ -62,3 +54,15 @@ RUN for d in $APP_DIR/patches/*; do \
             done ; \
         fi ; \
     done
+
+## DBCA specific configuration ##
+
+# Override the default dbca_start_ckan_development.sh script
+COPY setup/dbca_start_ckan_development.sh.override ${APP_DIR}/start_ckan_development.sh
+RUN chmod +x ${APP_DIR}/start_ckan_development.sh
+
+# Copy config files
+COPY config/*.ini ${APP_DIR}/config/
+
+# Override default CKAN config file to use dbca.ini
+ENV CKAN_INI=${APP_DIR}/config/dbca.ini

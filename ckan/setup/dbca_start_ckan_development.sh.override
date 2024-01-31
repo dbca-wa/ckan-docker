@@ -42,7 +42,8 @@ if [ ! -f /tmp/container_ready ]; then
             fi
         fi
     done
-
+    # Update the default ckan config file
+    export CKAN_INI=$APP_DIR/ckan.ini
     # Set debug to true
     echo "Enabling debug mode"
     ckan config-tool $CKAN_INI -s DEFAULT "debug = true"
@@ -88,6 +89,10 @@ if [ ! -f /tmp/container_ready ]; then
         done
     fi
 
+    # Revert back touse DBCA config file
+    export CKAN_INI=$APP_DIR/config/dbca.ini
+    # Unset CKAN__PLUGINS to stop the extension envvars overriding the plugins value set in the dbca config file
+    unset CKAN__PLUGINS
     # Set the container as ready so the startup scripts are not run again
     touch /tmp/container_ready
 fi

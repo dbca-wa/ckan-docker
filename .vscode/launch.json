@@ -13,7 +13,7 @@
                 "-c continue",
                 "/usr/bin/ckan",
                 "--config",
-                "/srv/app/ckan.ini",
+                "/srv/app/config/dbca.ini",
                 "run",
                 "--host",
                 "0.0.0.0",
@@ -30,9 +30,23 @@
                 "-c continue",
                 "/usr/bin/ckan",
                 "--config",
-                "/srv/app/ckan.ini",
+                "/srv/app/config/dbca.ini",
                 "jobs",
-                "worker",
+                "worker"
+            ],
+            "justMyCode": true
+        },
+        {
+            "name": "Python: CKAN CLI Command Run & Debug",
+            "type": "python",
+            "request": "launch",
+            "module": "pdb",
+            "args": [
+                "-c continue",
+                "/usr/bin/ckan",
+                "--config",
+                "/srv/app/config/dbca.ini",
+                "<CLI_COMMAND>"
             ],
             "justMyCode": true
         }

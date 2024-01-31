@@ -74,12 +74,12 @@ commands:
   logs:
     usage: Show Docker logs.
     cmd: |
+      TAIL=100
       if [[ $# -eq 2 ]]; then
         SERVICE=$1
         TAIL=$2
       else
         SERVICE=$1
-        TAIL=100
       fi;
       docker compose -f $DOCKER_COMPOSE logs -f --tail=$TAIL $SERVICE
 
@@ -124,7 +124,7 @@ commands:
     usage: Pipe in a postgres dump file.  `ahoy db-import local.dump`
     cmd: |
       if [ -e "$@" ] ; then
-        docker compose -f $DOCKER_COMPOSE exec -T $POSTGRESQL_CONTAINER_NAME sh -c 'pg_restore -U $CKAN_DB_USER -d $CKAN_DB --clean --if-exists -v' < "$@"
+        docker compose -f $DOCKER_COMPOSE exec -T $POSTGRESQL_CONTAINER_NAME sh -c 'pg_restore -U $CKAN_DB_USER -d $CKAN_DB --clean --if-exists -v --no-owner --no-privileges' < "$@"
       else echo "Provided sql file" "$@" "does not exist"
       fi
 
@@ -146,7 +146,7 @@ commands:
       if [ "$DOCKER_COMPOSE" = "docker-compose.dev.yml" ]; then
         SITE_URL="http://localhost:${CKAN_PORT_HOST}"
       else
-        SITE_URL="http://localhost:${NGINX_PORT_HOST}"
+        SITE_URL="http://localhost:${NGINX_SSLPORT_HOST}"
       fi
       open $SITE_URL
 

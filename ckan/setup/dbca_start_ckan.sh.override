@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# Update the default ckan config file
+export CKAN_INI=$APP_DIR/ckan.ini
+
+# Set up the Secret key used by Beaker and Flask
+# This can be overriden using a CKAN___BEAKER__SESSION__SECRET env var
+if grep -qE "beaker.session.secret ?= ?$" ckan.ini
+then
+    echo "Setting beaker.session.secret in ini file"
+    ckan config-tool $CKAN_INI "beaker.session.secret=$(python3 -c 'import secrets; print(secrets.token_urlsafe())')"
+    ckan config-tool $CKAN_INI "WTF_CSRF_SECRET_KEY=$(python3 -c 'import secrets; print(secrets.token_urlsafe())')"
+    JWT_SECRET=$(python3 -c 'import secrets; print("string:" + secrets.token_urlsafe())')
+    ckan config-tool $CKAN_INI "api_token.jwt.encode.secret=${JWT_SECRET}"
+    ckan config-tool $CKAN_INI "api_token.jwt.decode.secret=${JWT_SECRET}"
+fi
+
+# Run the prerun script to init CKAN and create the default admin user
+python3 prerun.py
+
+# Run any startup scripts provided by images extending this one
+if [[ -d "/docker-entrypoint.d" ]]
+then
+    for f in /docker-entrypoint.d/*; do
+        case "$f" in
+            *.sh)     echo "$0: Running init file $f"; bash "$f" ;;
+            *.py)     echo "$0: Running init file $f"; python3 "$f"; echo ;;
+            *)        echo "$0: Ignoring $f (not an sh or py file)" ;;
+        esac
+    done
+fi
+
+# Revert back touse DBCA config file
+export CKAN_INI=$APP_DIR/config/dbca.ini
+# Unset CKAN__PLUGINS to stop the extension envvars overriding the plugins value set in the dbca config file
+unset CKAN__PLUGINS
+
+if [ $? -eq 0 ]
+then
+    # Start supervisord
+    supervisord --configuration /etc/supervisord.conf &
+    # Start uwsgi
+    uwsgi -i $APP_DIR/config/uwsgi.ini
+else
+  echo "[prerun] failed...not starting CKAN."
+fi

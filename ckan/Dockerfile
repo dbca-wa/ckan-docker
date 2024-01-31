@@ -1,9 +1,4 @@
-FROM ckan/ckan-base:2.10.1
-
-# Install qsv dependency for extension ckanext-qa
-RUN wget -O /tmp/qsv.zip https://github.com/jqnatividad/qsv/releases/download/0.110.0/qsv-0.110.0-x86_64-unknown-linux-musl.zip && \
-    unzip /tmp/qsv.zip -d /usr/local/bin && \
-    rm /tmp/qsv.zip
+FROM ckan/ckan-base:2.10.3
 
 # Install any extensions needed by your CKAN instance
 # See Dockerfile.dev for more details and examples
@@ -26,3 +21,15 @@ RUN for d in $APP_DIR/patches/*; do \
             done ; \
         fi ; \
     done
+
+## DBCA specific configuration ##
+
+# Override the default start_ckan.sh script
+COPY setup/dbca_start_ckan.sh.override ${APP_DIR}/start_ckan.sh
+RUN chmod +x ${APP_DIR}/start_ckan.sh
+
+# Copy config files
+COPY config/*.ini ${APP_DIR}/config/
+
+# Override default CKAN config file to use dbca.ini
+ENV CKAN_INI=${APP_DIR}/config/dbca.ini
