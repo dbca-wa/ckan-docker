@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Set the CKAN plugins variable to the plugins value from the dbca.ini config file
+export CKAN__PLUGINS=$(grep '^ckan\.plugins' $APP_DIR/config/dbca.ini | cut -d'=' -f2)
+
 # Only run these start up scripts the first time the container is created
 if [ ! -f /tmp/container_ready ]; then
     # Install any local extensions in the src_extensions volume
@@ -60,10 +63,6 @@ if [ ! -f /tmp/container_ready ]; then
         ckan config-tool $CKAN_INI "api_token.jwt.decode.secret=${JWT_SECRET}"
     fi
 
-    # Update the plugins setting in the ini file with the values defined in the env var
-    echo "Loading the following plugins: $CKAN__PLUGINS"
-    ckan config-tool $CKAN_INI "ckan.plugins = $CKAN__PLUGINS"
-
     # Update test-core.ini DB, SOLR & Redis settings
     echo "Loading test settings into test-core.ini"
     ckan config-tool $SRC_DIR/ckan/test-core.ini \
@@ -91,8 +90,7 @@ if [ ! -f /tmp/container_ready ]; then
 
     # Revert back touse DBCA config file
     export CKAN_INI=$APP_DIR/config/dbca.ini
-    # Unset CKAN__PLUGINS to stop the extension envvars overriding the plugins value set in the dbca config file
-    unset CKAN__PLUGINS
+    
     # Set the container as ready so the startup scripts are not run again
     touch /tmp/container_ready
 fi

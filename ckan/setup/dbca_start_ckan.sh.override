@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Set the CKAN plugins variable to the plugins value from the dbca.ini config file
+export CKAN__PLUGINS=$(grep '^ckan\.plugins' $APP_DIR/config/dbca.ini | cut -d'=' -f2)
 # Update the default ckan config file
 export CKAN_INI=$APP_DIR/ckan.ini
 
@@ -32,8 +34,6 @@ fi
 
 # Revert back touse DBCA config file
 export CKAN_INI=$APP_DIR/config/dbca.ini
-# Unset CKAN__PLUGINS to stop the extension envvars overriding the plugins value set in the dbca config file
-unset CKAN__PLUGINS
 
 if [ $? -eq 0 ]
 then

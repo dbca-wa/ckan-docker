@@ -1,7 +1,5 @@
 #!/bin/bash
 
-# Get the ckan plugins values from the DBCA CKAN config file
-CKAN__PLUGINS=$(grep '^ckan\.plugins' $APP_DIR/config/dbca.ini | cut -d'=' -f2)
 echo "CKAN__PLUGINS: $CKAN__PLUGINS"
 
 if [[ $CKAN__PLUGINS == *"xloader"* ]]; then
