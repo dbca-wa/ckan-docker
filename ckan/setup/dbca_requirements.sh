@@ -69,5 +69,6 @@ pip3 install -e git+https://github.com/dbca-wa/ckanext-dbca.git@develop#egg=ckan
 wget -O /tmp/qsv.zip https://github.com/jqnatividad/qsv/releases/download/0.110.0/qsv-0.110.0-x86_64-unknown-linux-musl.zip
 unzip /tmp/qsv.zip -d /usr/local/bin
 rm /tmp/qsv.zip
-pip3 install -e git+https://github.com/dbca-wa/ckanext-qa.git@upgrade/ckan-2.10#egg=ckanext-qa
+apk add file
+pip3 install -e git+https://github.com/dbca-wa/ckanext-qa.git@develop#egg=ckanext-qa
 pip3 install -r ${SRC_DIR}/ckanext-qa/requirements.txt
