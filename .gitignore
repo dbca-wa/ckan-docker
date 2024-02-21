@@ -9,3 +9,4 @@ _src/*
 local/*
 .env
 dbca/
+spatial_data/

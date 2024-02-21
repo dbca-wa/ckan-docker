@@ -41,6 +41,11 @@ if [[ $CKAN__PLUGINS == *"doi"* ]]; then
     ckan -c $CKAN_INI doi initdb
 fi
 
+if [[ $CKAN__PLUGINS == *"dbca"* ]]; then
+    ckan -c $CKAN_INI db upgrade -p dbca
+    ckan -c $CKAN_INI dbca load_spatial_data
+fi
+
 # if [[ $CKAN__PLUGINS == *"harvest"* ]]; then
 #     ckan -c $CKAN_INI db upgrade -p harvest
 # fi
