@@ -36,12 +36,11 @@
 			],
 			// Set *default* container specific settings.json values on container create.
 			"settings": {
-				"terminal.integrated.defaultProfile.linux": "bash",
 				"python.defaultInterpreterPath": "python",
 				"python.languageServer": "Pylance",
 				"python.linting.enabled": true,
 				"python.analysis.extraPaths": [
-					"/srv/app/src"
+					"./app/src/ckan"
 				],
 				"[python]": {
 					"editor.defaultFormatter": "ms-python.autopep8"
