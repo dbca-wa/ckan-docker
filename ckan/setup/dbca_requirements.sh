@@ -14,7 +14,7 @@ pip3 install -r ${SRC_DIR}/ckanext-dcat/requirements.txt
 pip3 install -e git+https://github.com/ckan/ckanext-geoview.git@v0.1.0#egg=ckanext-geoview
 
 # Hierarchy
-pip3 install -e git+https://github.com/ckan/ckanext-hierarchy.git@v1.2.1#egg=ckanext-hierarchy
+pip3 install -e git+https://github.com/ckan/ckanext-hierarchy.git@v1.2.2#egg=ckanext-hierarchy
 pip3 install -r ${SRC_DIR}/ckanext-hierarchy/requirements.txt
 
 # Pages
