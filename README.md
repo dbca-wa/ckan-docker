@@ -44,12 +44,12 @@ The site is configured using environment variables that you can set in the `.env
 
 Install Docker by following the following instructions: [Install Docker Engine on Ubuntu](https://docs.docker.com/engine/install/ubuntu/)
 
-To verify a successful Docker installation, run `docker run hello-world` and `docker version`. These commands should output 
+To verify a successful Docker installation, run `docker run hello-world` and `docker version`. These commands should output
 versions for client and server.
 
 ## 3.  docker compose *vs* docker-compose
 
-All Docker Compose commands in this README will use the V2 version of Compose ie: `docker compose`. The older version (V1) 
+All Docker Compose commands in this README will use the V2 version of Compose ie: `docker compose`. The older version (V1)
 used the `docker-compose` command. Please see [Docker Compose](https://docs.docker.com/compose/compose-v2/) for
 more information.
 
@@ -75,7 +75,7 @@ To start the containers:
 	docker compose up
 
 This will start up the containers in the current window. By default the containers will log direct to this window with each container
-using a different colour. You could also use the -d "detach mode" option ie: `docker compose up -d` if you wished to use the current 
+using a different colour. You could also use the -d "detach mode" option ie: `docker compose up -d` if you wished to use the current
 window for something else.
 
 At the end of the container start sequence there should be 6 containers running
@@ -203,7 +203,7 @@ We want to install an extension like [ckanext-validation](https://github.com/fri
 #!/bin/bash
 
 # Create DB tables if not there
-ckan -c /srv/app/ckan.ini validation init-db 
+ckan -c /srv/app/ckan.ini validation init-db
 ```
 
 And then in our `Dockerfile.dev` file we install the extension and copy the initialization scripts:
@@ -221,7 +221,7 @@ NB: There are a number of extension examples commented out in the Dockerfile.dev
 
 ### Applying patches
 
-When building your project specific CKAN images (the ones defined in the `ckan/` folder), you can apply patches 
+When building your project specific CKAN images (the ones defined in the `ckan/` folder), you can apply patches
 to CKAN core or any of the built extensions. To do so create a folder inside `ckan/patches` with the name of the
 package to patch (ie `ckan` or `ckanext-??`). Inside you can place patch files that will be applied when building
 the images. The patches will be applied in alphabetical order, so you can prefix them sequentially if necessary.
@@ -258,7 +258,7 @@ command: `python -m pdb /usr/lib/ckan/venv/bin/ckan --config /srv/app/ckan.ini r
 
 ## 7. Datastore and datapusher
 
-The Datastore database and user is created as part of the entrypoint scripts for the db container. There is also a Datapusher container 
+The Datastore database and user is created as part of the entrypoint scripts for the db container. There is also a Datapusher container
 running the latest version of Datapusher.
 
 ## 8. NGINX
@@ -276,9 +276,9 @@ This extension checks for environmental variables conforming to an expected form
 
 For the extension to correctly identify which env var keys map to the format used for the config object, env var keys should be formatted in the following way:
 
-  All uppercase  
-  Replace periods ('.') with two underscores ('__')  
-  Keys must begin with 'CKAN' or 'CKANEXT', if they do not you can prepend them with '`CKAN___`' 
+  All uppercase
+  Replace periods ('.') with two underscores ('__')
+  Keys must begin with 'CKAN' or 'CKANEXT', if they do not you can prepend them with '`CKAN___`'
 
 For example:
 
@@ -286,7 +286,7 @@ For example:
   * `CKAN__DATAPUSHER__CALLBACK_URL_BASE=http://ckan:5000`
   * `CKAN___BEAKER__SESSION__SECRET=CHANGE_ME`
 
-These parameters can be added to the `.env` file 
+These parameters can be added to the `.env` file
 
 For more information please see [ckanext-envvars](https://github.com/okfn/ckanext-envvars)
 
@@ -314,7 +314,7 @@ For convenience the CKAN_SITE_URL parameter should be set in the .env file. For 
 
 ## 12. Changing the base image
 
-The base image used in the CKAN Dockerfile and Dockerfile.dev can be changed so a different DockerHub image is used eg: ckan/ckan-base:2.10.8 can be used instead of ckan/ckan-base:2.11.0
+The base image used in the CKAN Dockerfile and Dockerfile.dev can be changed so a different DockerHub image is used eg: ckan/ckan-base:2.10.9 can be used instead of ckan/ckan-base:2.11.0
 
 ## 13. Replacing DataPusher with XLoader
 
