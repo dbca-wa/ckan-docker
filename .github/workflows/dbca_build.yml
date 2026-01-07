@@ -25,6 +25,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Log in to the Container registry
         uses: docker/login-action@v3
@@ -70,7 +72,9 @@ jobs:
         run: echo "Using image ref ghcr.io/dbca-wa/ckan-docker-ckan:${{ steps.extract_first_tag.outputs.first_tag }}"
 
       - name: Run Trivy vuln scanner on CKAN image
-        uses: aquasecurity/trivy-action@0.26.0
+        uses: aquasecurity/trivy-action@0.32.0
+        env:
+          TRIVY_DB_REPOSITORY: public.ecr.aws/aquasecurity/trivy-db
         with:
           scan-type: "image"
           image-ref: ${{ steps.extract_first_tag.outputs.first_tag }}
