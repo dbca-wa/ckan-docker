@@ -46,6 +46,8 @@ commands:
         CKAN_CONTAINER_NAME=ckan-dev
         WORKER_CONTAINER_NAME=ckan-dev-worker
       fi
+      # Build the base ckan image first so the worker can use it as base image
+      docker compose -f $DOCKER_COMPOSE build "$CKAN_CONTAINER_NAME"
       docker compose -f $DOCKER_COMPOSE build "$@"
 
   cli:
