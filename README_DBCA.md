@@ -22,12 +22,12 @@
   - The first time the CKAN Dev containers are created the mapped volume will look in the `src:/srv/app/src_extensions` folder to install any extensions cloned from the `ahoy init` step and will pip install the extension and any any requirements file if they exists
 - To see the list of available commands with short descriptions run ahoy
 ```
-ahoy      
+ahoy
 NAME:
    ahoy - Creates a configurable cli app for running commands.
 USAGE:
    ahoy [global options] command [command options] [arguments...]
-   
+
 COMMANDS:
    attach              Attach to a running container
    build               Build project.
@@ -52,9 +52,20 @@ GLOBAL OPTIONS:
    --file value, -f value      Use a specific ahoy file.
    --help, -h                  show help
    --version                   print the version
-   --generate-bash-completion  
-   
+   --generate-bash-completion
+
 VERSION:
    2.0.2-homebrew
-   
-[fatal] Missing flag or argument.```
+
+[fatal] Missing flag or argument.
+```
+
+## How to implement the security patch for the CKAN
+- Run the GH action to generate the image, if not already done. see this https://salsadigital.atlassian.net/wiki/spaces/CKAN/pages/3499819055/CKAN+patching#Upgrade-Salsa-CKAN-Base-Images.
+- Update the image version with latest in below files.
+   - .env.dbca
+   - .env.example
+   - README.md
+   - ckan/Dockerfile
+   - ckan/Dockerfile.dev
+- Run the build and make sure all patches are applied cleanly ckan/patches
