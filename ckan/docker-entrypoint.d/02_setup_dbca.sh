@@ -32,6 +32,18 @@ if [ ! -f /tmp/container_ready ]; then
     fi
     CKAN_INI=$APP_DIR/config/dbca.ini 
 
+    # activity is a bundled plugin in CKAN 2.11 with its own migration branch
+    # (adds activity.permission_labels); core db init does not apply it.
+    if [[ $CKAN__PLUGINS == *"activity"* ]]; then
+        ckan -c $CKAN_INI db upgrade -p activity
+    fi
+
+    # CKAN 2.11 changed the datastore data-dictionary field storage; migrate
+    # existing datastore tables (no-op on a fresh datastore).
+    if [[ $CKAN__PLUGINS == *"datastore"* ]]; then
+        ckan -c $CKAN_INI datastore upgrade
+    fi
+
     if [[ $CKAN__PLUGINS == *"archiver"* ]]; then
         ckan -c $CKAN_INI archiver init
     fi
