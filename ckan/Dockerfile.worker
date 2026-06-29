@@ -5,8 +5,11 @@ FROM ${CKAN_IMAGE}
 USER root
 
 ENV CKAN_WORKER=true
-# Override the default CKAN config plugins to only use the ones we need for the worker
-ENV CKAN__PLUGINS="dbca activity datastore xloader scheming_datasets qa archiver report doi image_view text_view datatables_view pdf_view geo_view shp_view officedocs_view envvars"
+# Override the default CKAN config plugins to only use the ones we need for the worker.
+# Keep this in sync with dbca.ini's enabled set: dbca, pages and doi are temporarily
+# disabled for the CKAN 2.11 upgrade (see dbca.ini) — loading dbca here would otherwise
+# crash `ckan db init` in prerun (dbca_logs.exists() bound-metadata error). Re-add in Phase 2.
+ENV CKAN__PLUGINS="activity datastore xloader scheming_datasets qa archiver report image_view text_view datatables_view pdf_view geo_view shp_view officedocs_view envvars"
 RUN ckan config-tool $CKAN_INI "ckan.plugins = ${CKAN__PLUGINS}"
 
 ## Supervisor config (supervisor itself is installed via dbca_requirements.sh).
