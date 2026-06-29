@@ -1,25 +1,27 @@
 ARG CKAN_IMAGE
 FROM ${CKAN_IMAGE}
 
+# Run setup as root (config-tool, COPY and chown below need it); back to ckan at the end.
+USER root
+
 ENV CKAN_WORKER=true
 # Override the default CKAN config plugins to only use the ones we need for the worker
 ENV CKAN__PLUGINS="dbca activity datastore xloader scheming_datasets qa archiver report doi image_view text_view datatables_view pdf_view geo_view shp_view officedocs_view envvars"
 RUN ckan config-tool $CKAN_INI "ckan.plugins = ${CKAN__PLUGINS}"
 
-## Supervisor config
-COPY supervisor/ckan_*.conf /etc/supervisord.d
+## Supervisor config (supervisor itself is installed via dbca_requirements.sh).
+## Trailing slash keeps the dir target a directory for the multiple conf files.
+RUN mkdir -p /etc/supervisord.d
+COPY supervisor/ckan_*.conf /etc/supervisord.d/
 COPY supervisor/supervisord.conf /etc/supervisord.conf
 
 ## Cron jobs scripts
 COPY setup/dbca_logs_maintenance.sql $APP_DIR
 
-# Set the default user to root temporarily to update file and folder permissions
-USER root
-# Set the permissions to the ckan user
-RUN chown -R ckan:ckan $APP_DIR && \
-    chown -R ckan:ckan /usr/lib/python3.10/site-packages/ && \
-    chown -R ckan:ckan /usr/bin/ && \
-    chown -R ckan:ckan /etc/supervisord.d && \
+# Set ownership for the ckan runtime user (ckan-sys group, /usr/local paths)
+RUN chown -R ckan:ckan-sys $APP_DIR && \
+    chown -R ckan:ckan-sys /usr/local/lib/python3.10/site-packages/ && \
+    chown -R ckan:ckan-sys /etc/supervisord.d && \
     chmod -x $APP_DIR/dbca_logs_maintenance.sql
 
 # Set the default user to ckan
