@@ -1,18 +1,37 @@
-FROM ckan/ckan-base:2.10.10
+FROM ckan/ckan-base:2.11
 
-# Install any extensions needed by your CKAN instance
-# See Dockerfile.dev for more details and examples
+# CKAN 2.11 Debian base uses a two-user model (ckan-sys owns /usr/local + the app
+# dir; ckan runs the process). Install as root, drop back to ckan at the end.
+USER root
+
+# Install DBCA extensions (handles its own apt/pip deps, incl. xmlsec1 for saml2auth)
 COPY setup/dbca_requirements.sh ${APP_DIR}
-RUN pip3 install pip --upgrade && \
-    chmod +x ${APP_DIR}/dbca_requirements.sh && \
+RUN chmod +x ${APP_DIR}/dbca_requirements.sh && \
     ${APP_DIR}/dbca_requirements.sh
 
+# DBCA SAML metadata
+COPY saml ${APP_DIR}/saml
+
+# Override the default start_ckan.sh script with the DBCA version
+COPY setup/dbca_start_ckan.sh.override ${APP_DIR}/start_ckan.sh
+RUN chmod +x ${APP_DIR}/start_ckan.sh
+
+# DBCA config files; use dbca.ini as the active CKAN config
+COPY config/*.ini ${APP_DIR}/config/
+ENV CKAN_INI=${APP_DIR}/config/dbca.ini
+
 # Copy custom initialization scripts
-COPY docker-entrypoint.d/* /docker-entrypoint.d/
+COPY --chown=ckan-sys:ckan-sys docker-entrypoint.d/* /docker-entrypoint.d/
 
 # Apply any patches needed to CKAN core or any of the built extensions (not the
 # runtime mounted ones)
-COPY patches ${APP_DIR}/patches
+COPY --chown=ckan-sys:ckan-sys patches ${APP_DIR}/patches
+
+# Re-assert ownership after the root install steps
+RUN chown -R ckan:ckan-sys $APP_DIR && \
+    chown -R ckan:ckan-sys /usr/local/lib/python3.10/site-packages/
+
+USER ckan
 
 RUN for d in $APP_DIR/patches/*; do \
         if [ -d $d ]; then \
@@ -21,27 +40,3 @@ RUN for d in $APP_DIR/patches/*; do \
             done ; \
         fi ; \
     done
-
-## DBCA specific configuration ##
-
-# ckanext-saml2auth dependencies
-RUN apk add xmlsec-dev
-COPY saml ${APP_DIR}/saml
-
-# Override the default start_ckan.sh script
-COPY setup/dbca_start_ckan.sh.override ${APP_DIR}/start_ckan.sh
-RUN chmod +x ${APP_DIR}/start_ckan.sh
-
-# Copy config files
-COPY config/*.ini ${APP_DIR}/config/
-
-# Override default CKAN config file to use dbca.ini
-ENV CKAN_INI=${APP_DIR}/config/dbca.ini
-
-# Set the permissions to the ckan user
-RUN chown -R ckan:ckan $APP_DIR && \
-    chown -R ckan:ckan /usr/lib/python3.10/site-packages/ && \
-    chown -R ckan:ckan /usr/bin/
-
-# Set the default user to ckan
-USER ckan
