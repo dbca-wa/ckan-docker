@@ -57,7 +57,7 @@ if [ ! -f /tmp/container_ready ]; then
     fi
 
     if [[ $CKAN__PLUGINS == *"pages"* ]]; then
-        ckan -c $CKAN_INI pages initdb
+        ckan -c $CKAN_INI db upgrade -p pages
     fi
 
     if [[ $CKAN__PLUGINS == *"showcase"* ]]; then
