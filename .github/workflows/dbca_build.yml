@@ -55,7 +55,7 @@ jobs:
 
       # meta_ckan.outputs.tags is a newline-separated list that can contain
       # multiple tags (e.g. on a tag push). Resolve a single concrete image ref
-      # for the worker build-arg (FROM ${CKAN_IMAGE}) and the Trivy scan below.
+      # for the worker's `ckan` build-context (FROM ckan) and the Trivy scan below.
       - name: Extract first tag
         id: extract_first_tag
         env:
@@ -69,7 +69,7 @@ jobs:
           file: ./ckan/Dockerfile.worker
           push: true
           tags: ${{ steps.meta_ckan_worker.outputs.tags }}
-          build-args: CKAN_IMAGE=${{ steps.extract_first_tag.outputs.first_tag }}
+          build-contexts: ckan=docker-image://${{ steps.extract_first_tag.outputs.first_tag }}
 
       - name: Use first tag
         run: echo "Using CKAN image ref ${{ steps.extract_first_tag.outputs.first_tag }}"

@@ -1,8 +1,9 @@
-ARG CKAN_IMAGE
-FROM ${CKAN_IMAGE}
-
 # This image is entirely a DBCA addition — upstream ckan-docker dropped the bundled
-# supervisor/worker. It layers the job-worker role on top of the built CKAN image.
+# supervisor/worker. It layers the job-worker role on top of the built CKAN image,
+# supplied as the named build context `ckan`:
+#   compose -> build.additional_contexts (ckan: service:ckan[-dev])
+#   CI/buildx -> build-contexts: ckan=docker-image://<ckan-tag>
+FROM ckan
 
 # Run setup as root (config-tool, COPY and chown below need it); back to ckan at the end.
 USER root

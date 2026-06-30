@@ -64,9 +64,10 @@ services:
     build:
       context: ckan/
       dockerfile: Dockerfile.worker
+      additional_contexts:
+        ckan: "service:ckan"
       args:
         - TZ=${TZ}
-        - CKAN_IMAGE=${COMPOSE_PROJECT_NAME}-${CKAN_CONTAINER_NAME}
     networks:
       - ckannet
       - dbnet
