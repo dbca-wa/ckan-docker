@@ -99,15 +99,13 @@ callback URL won't match `localhost`. To test SAML locally:
    switch `CKAN_SITE_URL` back to `localhost` — it's a Salsa-internal dependency, not
    something the client or other developers need for normal work.
 
-**Gotcha (fixed, but worth knowing):** `ckan-dev-worker` shares the same `.env` file as
-`ckan-dev` via `env_file`. Pygmy's `docker-gen` treats *any* container carrying
-`LAGOON_LOCALDEV_URL`/`LAGOON_LOCALDEV_HTTP_PORT` as a routing candidate for that
-hostname — regardless of network membership or whether `LAGOON_ROUTE` is actually set —
-so without an explicit override, `ckan-dev-worker` also gets registered under the same
-route as `ckan-dev`, and Pygmy's haproxy config fails to load at all (duplicate backend
-name) — breaking routing for *every* project on the machine, not just this one.
-`docker-compose.dev.yml` blanks those two vars for `ckan-dev-worker` specifically to
-prevent this; leave that in place.
+**Gotcha (fixed, but worth knowing):** `ckan-dev-worker` shares `.env` with `ckan-dev`,
+so it also inherits `LAGOON_LOCALDEV_URL`/`HTTP_PORT` — and it has an exposed port via
+the `ckan-dev` base image, which is enough for Pygmy's `docker-gen` to register it as a
+duplicate route candidate too, breaking haproxy's config for *every* project on the
+machine. This happens whenever Pygmy is running, even without ever using
+`docker-compose.pygmy.yml`. `docker-compose.dev.yml` blanks both vars for
+`ckan-dev-worker` to prevent it — leave that in place.
 
 ## How to implement the security patch for the CKAN
 - Run the GH action to generate the image, if not already done. see this https://salsadigital.atlassian.net/wiki/spaces/CKAN/pages/3499819055/CKAN+patching#Upgrade-Salsa-CKAN-Base-Images.

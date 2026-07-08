@@ -56,12 +56,10 @@ services:
     env_file:
       - .env
     environment:
-      # Both services share env_file above, but LAGOON_LOCALDEV_URL/HTTP_PORT are a
-      # Pygmy routing trigger (any container carrying them becomes a route candidate
-      # for that hostname, regardless of network membership or LAGOON_ROUTE) — blank
-      # them here so only ckan-dev (the actual intended target) is ever routed to.
-      # Without this, running Pygmy locally causes a duplicate-backend name collision
-      # that breaks haproxy's config entirely, for every project on the machine.
+      # Worker inherits these via the shared env_file above; Pygmy's docker-gen routes
+      # to any exposed-port container carrying them (worker has one via the ckan-dev
+      # base image), causing a route collision the moment Pygmy is running — even
+      # without docker-compose.pygmy.yml. Blank them so only ckan-dev is ever routed.
       LAGOON_LOCALDEV_URL: ""
       LAGOON_LOCALDEV_HTTP_PORT: ""
     depends_on:
