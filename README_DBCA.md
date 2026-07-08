@@ -62,8 +62,9 @@ VERSION:
 
 ## Testing SAML login locally (Pygmy, optional)
 
-By default local dev uses `CKAN_SITE_URL=http://localhost:5050` — no extra tooling
-required, matches upstream `ckan-docker` convention.
+By default local dev uses `CKAN_SITE_URL=http://localhost:$CKAN_PORT_HOST` (`5000` unless
+you've overridden `CKAN_PORT_HOST` locally, e.g. to avoid a port conflict) — no extra
+tooling required, matches upstream `ckan-docker` convention.
 
 Xloader's worker-to-CKAN calls (resource fetch + job-status callback) already work
 without any of this, via `CKANEXT__XLOADER__SITE_URL=http://ckan-dev:5000` in `.env` /
@@ -76,7 +77,8 @@ callback URL won't match `localhost`. To test SAML locally:
 1. Install and run [Pygmy](https://github.com/pygmystack/pygmy) — provides host-side DNS
    resolution for `*.docker.amazee.io` domains.
 2. In `.env`, switch `CKAN_SITE_URL` to the commented-out amazee alternative
-   (`http://$LAGOON_LOCALDEV_URL:$CKAN_PORT_HOST`), then `ahoy up` to recreate.
+   (`http://$LAGOON_LOCALDEV_URL`, no port — Pygmy fronts it on the default port 80),
+   then `ahoy up` to recreate.
 3. `docker-compose.dev.yml`'s `extra_hosts` entry (`${LAGOON_LOCALDEV_URL}:host-gateway`)
    is already in place on both `ckan-dev` and `ckan-dev-worker` — no host `/etc/hosts`
    edit needed inside the containers; Pygmy handles resolution on the host side for your
