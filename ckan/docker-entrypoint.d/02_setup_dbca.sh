@@ -64,8 +64,9 @@ if [ ! -f /tmp/container_ready ]; then
         ckan -c $CKAN_INI db upgrade -p showcase
     fi
 
+    # doi 4.0.4 dropped `doi initdb` (bound-metadata) for an alembic migration.
     if [[ $CKAN__PLUGINS == *"doi"* ]]; then
-        ckan -c $CKAN_INI doi initdb
+        ckan -c $CKAN_INI db upgrade -p doi
     fi
 
     if [[ $CKAN__PLUGINS == *"dbca"* ]]; then

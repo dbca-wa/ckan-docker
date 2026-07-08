@@ -57,7 +57,7 @@ pip3 install -r ${SRC_DIR}/ckanext-xloader/requirements.txt
 
 ## 3rd Party ##
 # DOI
-# pip3 install -e git+https://github.com/NaturalHistoryMuseum/ckanext-doi@v3.1.10#egg=ckanext-doi
+pip3 install -e git+https://github.com/NaturalHistoryMuseum/ckanext-doi.git@v4.0.4#egg=ckanext-doi
 
 # Office Docs
 pip3 install -e git+https://github.com/jqnatividad/ckanext-officedocs.git@b936b89b6f2c81c347f4a6cd7e6fa0762db53b33#egg=ckanext-officedocs
@@ -71,9 +71,6 @@ pip3 install -e git+https://github.com/keitaroinc/ckanext-saml2auth.git@53180596
 
 # DBCA
 pip3 install -e git+https://github.com/dbca-wa/ckanext-dbca.git@develop#egg=ckanext-dbca
-
-# DOI
-pip3 install -e git+https://github.com/dbca-wa/ckanext-doi@develop#egg=ckanext-doi
 
 # QA
 # Install qsv dependency for extension ckanext-qa
