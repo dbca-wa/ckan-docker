@@ -28,6 +28,20 @@ pip3 install -e git+https://github.com/ckan/ckanext-pages.git@28eba99ad85d3b9037
 # PDF View
 pip3 install -e git+https://github.com/ckan/ckanext-pdfview.git@071571546b99498f543ea0c34de44da3b9ac9d7b#egg=ckanext-pdfview
 
+# QA
+# Install qsv dependency for extension ckanext-qa
+# file (libmagic) is required by ckanext-qa; unzip is needed to extract the qsv binary
+apt-get update && apt-get install -y --no-install-recommends file unzip
+# Use the musl (static) qsv build: the gnu build needs glibc 2.38+, newer than
+# Debian 12 bookworm's 2.36, but musl runs fine here since it's statically linked.
+# Pinned to match the version ckanext-qa's own upstream CI tests against; the
+# project moved from jqnatividad/qsv to dathere/qsv and rebased its versioning.
+wget -O /tmp/qsv.zip https://github.com/dathere/qsv/releases/download/21.1.0/qsv-21.1.0-x86_64-unknown-linux-musl.zip
+unzip /tmp/qsv.zip -d /usr/local/bin
+rm /tmp/qsv.zip
+pip3 install -e git+https://github.com/ckan/ckanext-qa.git@a54141a4aa3056bc3c6bf597665c28a9f31e04a1#egg=ckanext-qa
+pip3 install -r ${SRC_DIR}/ckanext-qa/requirements.txt
+
 # Report
 pip3 install -e git+https://github.com/ckan/ckanext-report.git@5f25ae4e93597933520b6a76e8dbad9f5195f897#egg=ckanext-report --exists-action i
 pip3 install -r ${SRC_DIR}/ckanext-report/requirements.txt
@@ -71,14 +85,3 @@ pip3 install -e git+https://github.com/keitaroinc/ckanext-saml2auth.git@53180596
 
 # DBCA
 pip3 install -e git+https://github.com/dbca-wa/ckanext-dbca.git@develop#egg=ckanext-dbca
-
-# QA
-# Install qsv dependency for extension ckanext-qa
-# file (libmagic) is required by ckanext-qa; unzip is needed to extract the qsv binary
-apt-get update && apt-get install -y --no-install-recommends file unzip
-# Use the glibc (gnu) qsv build for Debian; the musl build only runs on Alpine
-wget -O /tmp/qsv.zip https://github.com/jqnatividad/qsv/releases/download/0.110.0/qsv-0.110.0-x86_64-unknown-linux-gnu.zip
-unzip /tmp/qsv.zip -d /usr/local/bin
-rm /tmp/qsv.zip
-pip3 install -e git+https://github.com/dbca-wa/ckanext-qa.git@develop#egg=ckanext-qa
-pip3 install -r ${SRC_DIR}/ckanext-qa/requirements.txt
