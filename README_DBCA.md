@@ -81,9 +81,11 @@ callback URL won't match `localhost`. To test SAML locally:
    with Pygmy's proxy (see step 2).
 2. Layer `docker-compose.pygmy.yml` on top of the normal dev stack to register
    `ckan-dev` with Pygmy's proxy:
-   ```
+
+   ```sh
    docker compose -f docker-compose.dev.yml -f docker-compose.pygmy.yml up -d
    ```
+
    This joins `ckan-dev` to Pygmy's `amazeeio-network` and sets `LAGOON_ROUTE` so its
    haproxy picks it up. Requires the `amazeeio-network` Docker network to already exist
    (i.e. Pygmy running) — that's why this isn't in `docker-compose.dev.yml` itself;
