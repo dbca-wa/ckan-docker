@@ -60,6 +60,30 @@ VERSION:
 [fatal] Missing flag or argument.
 ```
 
+## Testing SAML login locally (Pygmy, optional)
+
+By default local dev uses `CKAN_SITE_URL=http://localhost:5050` — no extra tooling
+required, matches upstream `ckan-docker` convention.
+
+Xloader's worker-to-CKAN calls (resource fetch + job-status callback) already work
+without any of this, via `CKANEXT__XLOADER__SITE_URL=http://ckan-dev:5000` in `.env` /
+`.env.dbca`, which points those calls directly at the `ckan-dev` compose service instead
+of round-tripping through `CKAN_SITE_URL`.
+
+The one thing `localhost` can't do is SAML login testing, since the IdP's registered
+callback URL won't match `localhost`. To test SAML locally:
+
+1. Install and run [Pygmy](https://github.com/pygmystack/pygmy) — provides host-side DNS
+   resolution for `*.docker.amazee.io` domains.
+2. In `.env`, switch `CKAN_SITE_URL` to the commented-out amazee alternative
+   (`http://$LAGOON_LOCALDEV_URL:$CKAN_PORT_HOST`), then `ahoy up` to recreate.
+3. `docker-compose.dev.yml`'s `extra_hosts` entry (`${LAGOON_LOCALDEV_URL}:host-gateway`)
+   is already in place on both `ckan-dev` and `ckan-dev-worker` — no host `/etc/hosts`
+   edit needed inside the containers; Pygmy handles resolution on the host side for your
+   browser.
+4. Switch `CKAN_SITE_URL` back to `localhost` when done — it's a Salsa-internal
+   dependency, not something the client or other developers need for normal work.
+
 ## How to implement the security patch for the CKAN
 - Run the GH action to generate the image, if not already done. see this https://salsadigital.atlassian.net/wiki/spaces/CKAN/pages/3499819055/CKAN+patching#Upgrade-Salsa-CKAN-Base-Images.
 - Update the image version with latest in below files.

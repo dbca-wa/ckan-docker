@@ -41,6 +41,8 @@ services:
       interval: 60s
       timeout: 10s
       retries: 3
+    extra_hosts:
+      - "${LAGOON_LOCALDEV_URL}:host-gateway"
 
   ckan-dev-worker:
     platform: linux/amd64
@@ -77,6 +79,8 @@ services:
       interval: 60s
       timeout: 10s
       retries: 3
+    extra_hosts:
+      - "${LAGOON_LOCALDEV_URL}:host-gateway"
 
   db:
     build:
