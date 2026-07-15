@@ -84,4 +84,6 @@ pip3 install -e git+https://github.com/keitaroinc/ckanext-saml2auth.git@53180596
 ## DBCA Project ##
 
 # DBCA
-pip3 install -e git+https://github.com/dbca-wa/ckanext-dbca.git@develop#egg=ckanext-dbca
+# Ref is build-time configurable so releases can pin an immutable tag/SHA instead
+# of a moving branch. Defaults to develop for local/dev builds; CI sets it per branch.
+pip3 install -e git+https://github.com/dbca-wa/ckanext-dbca.git@${CKANEXT_DBCA_REF:-develop}#egg=ckanext-dbca

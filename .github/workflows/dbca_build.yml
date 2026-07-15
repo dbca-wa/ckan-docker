@@ -33,6 +33,19 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
+      # Pin the ckanext-dbca ref per build. Release refs (master branch or any
+      # git tag) use the CKANEXT_DBCA_REF repo variable — set it to an immutable
+      # tag/SHA at release time — falling back to master if unset. Everything else
+      # (develop and feature branches) tracks the develop branch.
+      - name: Determine ckanext-dbca ref
+        id: dbca_ref
+        run: |
+          if [ "${{ github.ref_type }}" = "tag" ] || [ "${{ github.ref_name }}" = "master" ]; then
+            echo "ref=${{ vars.CKANEXT_DBCA_REF || 'master' }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "ref=develop" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Extract metadata (tags, labels) for Docker ckan image
         id: meta_ckan
         uses: docker/metadata-action@v6
@@ -52,6 +65,8 @@ jobs:
           file: ./ckan/Dockerfile
           push: true
           tags: ${{ steps.meta_ckan.outputs.tags }}
+          build-args: |
+            CKANEXT_DBCA_REF=${{ steps.dbca_ref.outputs.ref }}
 
       # meta_ckan.outputs.tags is a newline-separated list that can contain
       # multiple tags (e.g. on a tag push). Resolve a single concrete image ref
