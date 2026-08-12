@@ -1,30 +1,27 @@
 # Docker Compose setup for CKAN
 
 
-- [Docker Compose setup for CKAN](#docker-compose-setup-for-ckan)
-  - [1.  Overview](#1--overview)
-  - [2.  Installing Docker](#2--installing-docker)
-  - [3.  docker compose *vs* docker-compose](#3--docker-compose-vs-docker-compose)
-  - [4.  Install (build and run) CKAN plus dependencies](#4--install-build-and-run-ckan-plus-dependencies)
-    - [Base mode](#base-mode)
-    - [Development mode](#development-mode)
-      - [Create an extension](#create-an-extension)
-      - [Running HTTPS on development mode](#running-https-on-development-mode)
-      - [Remote Debugging with VS Code](#remote-debugging-with-vs-code)
-      - [Updating the environment file for development mode](#updating-the-environment-file-for-development-mode)
-  - [5. CKAN images](#5-ckan-images)
-    - [Extending the base images](#extending-the-base-images)
-    - [Applying patches](#applying-patches)
-    - [_uWSGI_ command line arguments](#uwsgi-command-line-arguments)
-  - [6. Debugging with pdb](#6-debugging-with-pdb)
-  - [7. Datastore and datapusher](#7-datastore-and-datapusher)
-  - [8. NGINX](#8-nginx)
-  - [9. ckanext-envvars](#9-ckanext-envvars)
-  - [10. CKAN\_SITE\_URL](#10-ckan_site_url)
-  - [11. Manage new users](#11-manage-new-users)
-  - [12. Changing the base image](#12-changing-the-base-image)
-  - [13. Replacing DataPusher with XLoader](#13-replacing-datapusher-with-xloader)
-  - [Copying and License](#copying-and-license)
+* [1. Overview](#1-overview)
+* [2. Installing Docker](#2-installing-docker)
+* [3. docker compose vs docker-compose](#3-docker-compose-vs-docker-compose)
+* [4. Install (build and run) CKAN plus dependencies](#4-install-build-and-run-ckan-plus-dependencies)
+  * [Base mode](#base-mode)
+  * [Development mode](#development-mode)
+    * [Create an extension](#create-an-extension)
+    * [Running HTTPS on development mode](#running-https-on-development-mode)
+    * [Remote Debugging with VS Code](#remote-debugging-with-vs-code)
+    * [Updating the environment file for development mode](#updating-the-environment-file-for-development-mode)
+* [5. CKAN images](#5-ckan-images)
+  * [Extending the base images](#extending-the-base-images)
+  * [Applying patches](#applying-patches)
+* [6. Debugging with pdb](#6-debugging-with-pdb)
+* [7. Datastore and Datapusher](#7-datastore-and-datapusher)
+* [8. NGINX](#8-nginx)
+* [9. ckanext-envvars](#9-ckanext-envvars)
+* [10. CKAN_SITE_URL](#10-CKAN_SITE_URL)
+* [11. Manage new users](#11-manage-new-users)
+* [12. Changing the base image](#12-changing-the-base-image)
+* [13. Replacing DataPusher with XLoader](#13-replacing-datapusher-with-xLoader)
 
 
 ## 1.  Overview
@@ -35,7 +32,7 @@ The CKAN images used are from the official CKAN [ckan-docker](https://github.com
 
 The non-CKAN images are as follows:
 
-* DataPusher: CKAN's [pre-configured DataPusher image](https://github.com/ckan/ckan-docker-base/tree/main/datapusher).
+* DataPusher: CKAN's [pre-configured DataPusher image](https://github.com/ckan/ckan-base/tree/main/datapusher).
 * PostgreSQL: Official PostgreSQL image. Database files are stored in a named volume.
 * Solr: CKAN's [pre-configured Solr image](https://github.com/ckan/ckan-solr). Index data is stored in a named volume.
 * Redis: standard Redis image
@@ -64,8 +61,10 @@ Use this if you are a maintainer and will not be making code changes to CKAN or 
 
 Copy the included `.env.example` and rename it to `.env`. Modify it depending on your own needs.
 
-> [!WARNING]
-> There is a sysadmin user created by default with the values defined in `CKAN_SYSADMIN_NAME` and `CKAN_SYSADMIN_PASSWORD` (`ckan_admin` and `test1234` by default). These must be changed before running this setup as a public CKAN instance.
+Please note that when accessing CKAN directly (via a browser) ie: not going through NGINX you will need to make sure you have "ckan" set up
+to be an alias to localhost in the local hosts file. Either that or you will need to change the `.env` entry for `CKAN_SITE_URL`
+
+Using the default values on the `.env.example` file will get you a working CKAN instance. There is a sysadmin user created by default with the values defined in `CKAN_SYSADMIN_NAME` and `CKAN_SYSADMIN_PASSWORD`(`ckan_admin` and `test1234` by default). This should be obviously changed before running this setup as a public CKAN instance.
 
 To build the images:
 
@@ -79,49 +78,26 @@ This will start up the containers in the current window. By default the containe
 using a different colour. You could also use the -d "detach mode" option ie: `docker compose up -d` if you wished to use the current
 window for something else.
 
-At the end of the container start sequence there should be 6 containers running:
+At the end of the container start sequence there should be 6 containers running
 
-```bash
-$ docker compose ps
-NAME                       IMAGE                              COMMAND                  SERVICE      CREATED         STATUS                   PORTS
-ckan-docker-ckan-1         ckan-docker-ckan                   "/srv/app/start_ckan…"   ckan         4 minutes ago   Up 3 minutes (healthy)   5000/tcp
-ckan-docker-datapusher-1   ckan/ckan-base-datapusher:0.0.20   "sh -c 'uwsgi --plug…"   datapusher   4 minutes ago   Up 4 minutes (healthy)   8800/tcp
-ckan-docker-db-1           ckan-docker-db                     "docker-entrypoint.s…"   db           4 minutes ago   Up 4 minutes (healthy)
-ckan-docker-nginx-1        ckan-docker-nginx                  "/bin/sh -c 'openssl…"   nginx        4 minutes ago   Up 2 minutes             80/tcp, 0.0.0.0:8443->443/tcp
-ckan-docker-redis-1        redis:6                            "docker-entrypoint.s…"   redis        4 minutes ago   Up 4 minutes (healthy)
-ckan-docker-solr-1         ckan/ckan-solr:2.10-solr9          "docker-entrypoint.s…"   solr         4 minutes ago   Up 4 minutes (healthy)
-```
+![Screenshot 2022-12-12 at 10 36 21 am](https://user-images.githubusercontent.com/54408245/207012236-f9571baa-4d99-4ffe-bd93-30b11c4829e0.png)
 
-After this step, CKAN should be running at `CKAN_SITE_URL` (by default https://localhost:8443)
+After this step, CKAN should be running at `CKAN_SITE_URL`.
 
 
 ### Development mode
 
 Use this mode if you are making code changes to CKAN and either creating new extensions or making code changes to existing extensions. This mode also uses the `.env` file for config options.
 
-To develop local extensions use the `docker-compose.dev.yml` file with help from the scripts under `bin`:
-
-dev script | description
---- | ---
-`bin/ckan …` | exec `ckan` cli within the ckan-dev container
-`bin/compose …` | dev docker compose commands
-`bin/generate_extension` | generate extension in `src` directory
-`bin/install_src` | install all extensions from `src` directory (ckan-dev does not need to be running)
-`bin/reload` | reload ckan within the ckan-dev container without restarting
-`bin/restart` | shut down and restart the whole ckan-dev container (use `bin/compose up -d` instead to reload new values from .env)
-`bin/shell` | exec bash prompt within the ckan-dev container
+To develop local extensions use the `docker-compose.dev.yml` file:
 
 To build the images:
 
-	bin/compose build
-
-To install extensions from the `src` directory:
-
-	bin/install_src
+	docker compose -f docker-compose.dev.yml build
 
 To start the containers:
 
-	bin/compose up
+	docker compose -f docker-compose.dev.yml up
 
 See [CKAN images](#5-ckan-images) for more details of what happens when using development mode.
 
@@ -130,22 +106,12 @@ See [CKAN images](#5-ckan-images) for more details of what happens when using de
 
 You can use the ckan [extension](https://docs.ckan.org/en/latest/extensions/tutorial.html#creating-a-new-extension) instructions to create a CKAN extension, only executing the command inside the CKAN container and setting the mounted `src/` folder as output:
 
-        bin/generate_extension
+    docker compose -f docker-compose.dev.yml exec ckan-dev /bin/sh -c "ckan -c /srv/app/ckan.ini generate extension --output-dir /srv/app/src_extensions"
 
-```
-Extension's name [must begin 'ckanext-']: ckanext-mytheme
-Author's name []: Joe Bloggs
-Author's email []: joeb@example.com
-Your Github user or organization name []: example
-Brief description of the project []: My CKAN theme
-List of keywords (separated by spaces) [CKAN]:
-Do you want to include code examples? [y/N]: y
+![Screenshot 2023-02-22 at 1 45 55 pm](https://user-images.githubusercontent.com/54408245/220623568-b4e074c7-6d07-4d27-ae29-35ce70961463.png)
 
-Written: /srv/app/src_extensions/ckanext-mytheme
-```
 
-The new extension files and directories are created in the `/srv/app/src_extensions/` folder in the running container. They will also exist in the local src/ directory as local `/src` directory is mounted as `/srv/app/src_extensions/` on the ckan container.
-
+The new extension files and directories are created in the `/srv/app/src_extensions/` folder in the running container. They will also exist in the local src/ directory as local `/src` directory is mounted as `/srv/app/src_extensions/` on the ckan container. You might need to change the owner of its folder to have the appropiate permissions.
 
 #### Running HTTPS on development mode
 
@@ -174,10 +140,6 @@ development instance in your `.env` file:
   USE_DEBUGPY_FOR_DEV=true
 ```
 
-Next run the install script to install debugpy:
-
-	bin/install_src
-
 Then start the containers in [development mode](#development-mode) and launch VS Code.
 
 In VS Code:
@@ -185,9 +147,8 @@ In VS Code:
 1. Install the "Dev Container" extension: press CTRL+SHIFT+X, type "dev container", click "install"
 2. Click the "Open a Remote Window" button in the bottom-left of the VS Code window
 3. Click "Attach to Running Container..." and select your ckan-dev container, e.g. "ckan-docker-ckan-dev-1"
-4. Click the "Run and Debug" icon on the left panel and choose to install the "Python Debugger"
-5. Click "create a launch.json", select "Python Debugger", "Remote Attach", host "localhost" and port "5678"
-6. Press F5 or click the "Run" menu and "Start Debugging"
+4. Click the "Run and Debug" icon on the left panel then "create a launch.json", select "Python Debugger", "Remote Attach", host "localhost" and port "5678"
+5. Press F5 or click the "Run" menu and "Start Debugging"
 
 You can now set breakpoints and remote debug your CKAN development instance.
 
@@ -198,6 +159,7 @@ The Docker Compose environment `.env` file by default is set up for production m
 
 1. Change the `CKAN_SITE_URL` variable to be: http://localhost:5000
 2. Update the `CKAN__DATAPUSHER__CALLBACK_URL_BASE` variable to use the `ckan-dev` container name: http://ckan-dev:5000
+3. Update the `DATAPUSHER_REWRITE_URL` variable to also use the `ckan-dev` container name http://ckan-dev:5000
 
 
 ## 5. CKAN images
@@ -278,22 +240,8 @@ ckan
 ├── setup
 ├── Dockerfile
 └── Dockerfile.dev
+
 ```
-
-### _uWSGI_ command line arguments
-
-The images use the application server [_uWSGI_](https://uwsgi-docs.readthedocs.io/en/latest/) to run _CKAN_. There are two environment variables, that allow to configure _uWSGI_ using [command line arguments](https://uwsgi-docs.readthedocs.io/en/latest/Configuration.html#command-line-arguments). The available options are described [here](https://uwsgi-docs.readthedocs.io/en/latest/Options.html).
-
-For most use cases, the defaults specified in `ckan-X.XX/setup/start_ckan.sh` in `DEFAULT_UWSGI_OPTS` of the [ckan/ckan-docker-base](https://github.com/ckan/ckan-docker-base) image are fine. If required, you can either _overwrite_ the defaults or _append_ additional arguments.
-
-| Variable            | Description                                           | Defaults           |
-|:--------------------|:------------------------------------------------------| :------------------|
-| `UWSGI_OPTS`        | If set, overwrites `DEFAULT_UWSGI_OPTS`. If not set, `UWSGI_OPTS` will bet set to `DEFAULT_UWSGI_OPTS`.             | unset              |
-| `EXTRA_UWSGI_OPTS`  | If set, appends its content to `UWSGI_OPTS`.          | unset              |
-
-> [!IMPORTANT]
-> These setting **do not** apply for the dev images.
-
 
 ## 6. Debugging with pdb
 
@@ -350,18 +298,19 @@ For convenience the CKAN_SITE_URL parameter should be set in the .env file. For 
 
 1. Create a new user from the Docker host, for example to create a new user called 'admin'
 
-   `docker compose exec ckan ckan user add admin email=admin@localhost`
-
-   To set this user as a sysadmin run
-
-   `docker compose exec ckan ckan sysadmin add admin`
+   `docker exec -it <container-id> ckan -c ckan.ini user add admin email=admin@localhost`
 
    To delete the 'admin' user
 
-   `docker compose exec ckan ckan user remove admin`
+   `docker exec -it <container-id> ckan -c ckan.ini user remove admin`
 
-   In development mode use `bin/ckan` instead of `docker compose exec ckan ckan` for the above commands.
+2. Create a new user from within the ckan container. You will need to get a session on the running container
 
+   `ckan -c ckan.ini user add admin email=admin@localhost`
+
+   To delete the 'admin' user
+
+   `ckan -c ckan.ini user remove admin`
 
 ## 12. Changing the base image
 

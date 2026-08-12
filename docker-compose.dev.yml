@@ -4,18 +4,21 @@ volumes:
   solr_data:
   pip_cache:
   site_packages:
-  local_bin:
+  vscode_server:
 
 services:
 
   ckan-dev:
-    platform: linux/amd64
+    user: ckan:ckan
     build:
       context: ckan/
       dockerfile: Dockerfile.dev
       args:
         - TZ=${TZ}
+      platforms:
+        - linux/amd64
     image: ${COMPOSE_PROJECT_NAME}-ckan-dev
+    platform: linux/amd64
     env_file:
       - .env
     depends_on:
@@ -31,37 +34,27 @@ services:
       - ckan_storage:/var/lib/ckan
       - ./src:/srv/app/src_extensions
       - pip_cache:/root/.cache/pip
-      - site_packages:/usr/local/lib/python3.10/site-packages
-      - local_bin:/usr/local/bin
+      - site_packages:/usr/lib/python3.10/site-packages
+      - vscode_server:/root/.vscode-server
       - ./ckan/config:/srv/app/config
       - ./logs:/srv/app/logs
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-qO", "/dev/null", "http://localhost:5000"]
-      interval: 60s
-      timeout: 10s
-      retries: 3
-    extra_hosts:
-      - "${LAGOON_LOCALDEV_URL}:host-gateway"
 
   ckan-dev-worker:
-    platform: linux/amd64
+    user: ckan:ckan
     build:
       context: ckan/
       dockerfile: Dockerfile.worker
-      additional_contexts:
-        ckan: "service:ckan-dev"
       args:
         - TZ=${TZ}
+        - CKAN_IMAGE=${COMPOSE_PROJECT_NAME}-ckan-dev
+      platforms:
+        - linux/amd64
+    platform: linux/amd64
     env_file:
       - .env
-    environment:
-      # Worker inherits these via the shared env_file above; Pygmy's docker-gen routes
-      # to any exposed-port container carrying them (worker has one via the ckan-dev
-      # base image), causing a route collision the moment Pygmy is running — even
-      # without docker-compose.pygmy.yml. Blank them so only ckan-dev is ever routed.
-      LAGOON_LOCALDEV_URL: ""
-      LAGOON_LOCALDEV_HTTP_PORT: ""
     depends_on:
       db:
         condition: service_healthy
@@ -75,19 +68,13 @@ services:
       - ckan_storage:/var/lib/ckan
       - ./src:/srv/app/src_extensions
       - pip_cache:/root/.cache/pip
-      - site_packages:/usr/local/lib/python3.10/site-packages
-      - local_bin:/usr/local/bin
-      - ./ckan/config:/srv/app/config
+      - site_packages:/usr/lib/python3.10/site-packages
+      - vscode_server:/root/.vscode-server
       - ./logs:/srv/app/logs
       - ./spatial_data:/srv/app/spatial_data
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "supervisorctl", "status"]
-      interval: 60s
-      timeout: 10s
-      retries: 3
-    extra_hosts:
-      - "${LAGOON_LOCALDEV_URL}:host-gateway"
 
   db:
     build:
@@ -109,10 +96,10 @@ services:
       test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}"]
     ports:
       - :5432
-
+     
   solr:
-    platform: linux/amd64
     image: ckan/ckan-solr:${SOLR_IMAGE_VERSION}
+    platform: linux/amd64
     volumes:
       - solr_data:/var/solr
     restart: unless-stopped
