@@ -60,6 +60,53 @@ VERSION:
 [fatal] Missing flag or argument.
 ```
 
+## Testing SAML login locally (Pygmy, optional)
+
+By default local dev uses `CKAN_SITE_URL=http://localhost:$CKAN_PORT_HOST` (`5000` unless
+you've overridden `CKAN_PORT_HOST` locally, e.g. to avoid a port conflict) — no extra
+tooling required, matches upstream `ckan-docker` convention.
+
+Xloader's worker-to-CKAN calls (resource fetch + job-status callback) already work
+without any of this, via `CKANEXT__XLOADER__SITE_URL=http://ckan-dev:5000` in `.env` /
+`.env.dbca`, which points those calls directly at the `ckan-dev` compose service instead
+of round-tripping through `CKAN_SITE_URL`.
+
+The one thing `localhost` can't do is SAML login testing, since the IdP's registered
+callback URL won't match `localhost`. To test SAML locally:
+
+1. Install and run [Pygmy](https://github.com/pygmystack/pygmy). Pygmy runs its own
+   `amazeeio-haproxy` + `amazeeio-dnsmasq` containers, which route `*.docker.amazee.io`
+   traffic (port 80, no port needed) to whichever container asks for it — this is
+   different from plain DNS/`extra_hosts`, and needs a container to actually register
+   with Pygmy's proxy (see step 2).
+2. Layer `docker-compose.pygmy.yml` on top of the normal dev stack to register
+   `ckan-dev` with Pygmy's proxy:
+
+   ```sh
+   docker compose -f docker-compose.dev.yml -f docker-compose.pygmy.yml up -d
+   ```
+
+   This joins `ckan-dev` to Pygmy's `amazeeio-network` and sets `LAGOON_ROUTE` so its
+   haproxy picks it up. Requires the `amazeeio-network` Docker network to already exist
+   (i.e. Pygmy running) — that's why this isn't in `docker-compose.dev.yml` itself;
+   referencing a non-existent external network would break `docker compose up` for
+   everyone without Pygmy installed.
+3. In `.env`, switch `CKAN_SITE_URL` to the commented-out amazee alternative
+   (`http://$LAGOON_LOCALDEV_URL`, no port) if you need CKAN's own site URL to match
+   what you're browsing (e.g. for SAML, where the IdP checks the callback domain).
+4. When done, bring the stack back up with just `docker-compose.dev.yml` (no
+   `-f docker-compose.pygmy.yml`) to leave `ckan-dev` off Pygmy's network again, and
+   switch `CKAN_SITE_URL` back to `localhost` — it's a Salsa-internal dependency, not
+   something the client or other developers need for normal work.
+
+**Gotcha (fixed, but worth knowing):** `ckan-dev-worker` shares `.env` with `ckan-dev`,
+so it also inherits `LAGOON_LOCALDEV_URL`/`HTTP_PORT` — and it has an exposed port via
+the `ckan-dev` base image, which is enough for Pygmy's `docker-gen` to register it as a
+duplicate route candidate too, breaking haproxy's config for *every* project on the
+machine. This happens whenever Pygmy is running, even without ever using
+`docker-compose.pygmy.yml`. `docker-compose.dev.yml` blanks both vars for
+`ckan-dev-worker` to prevent it — leave that in place.
+
 ## How to implement the security patch for the CKAN
 - Run the GH action to generate the image, if not already done. see this https://salsadigital.atlassian.net/wiki/spaces/CKAN/pages/3499819055/CKAN+patching#Upgrade-Salsa-CKAN-Base-Images.
 - Update the image version with latest in below files.
