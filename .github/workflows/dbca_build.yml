@@ -98,6 +98,11 @@ jobs:
           image-ref: ${{ steps.extract_first_tag.outputs.first_tag }}
           vuln-type: "os,library"
           severity: "HIGH,CRITICAL"
+          # Skip OS packages with no upstream fix available (they reappear once
+          # Debian ships one)
+          ignore-unfixed: "true"
+          # Without this the severity filter above is not applied to SARIF output
+          limit-severities-for-sarif: "true"
           format: "sarif"
           output: "trivy-results.sarif"
 
