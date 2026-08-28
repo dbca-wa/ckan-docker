@@ -1,4 +1,4 @@
-FROM ckan/ckan-base:2.11
+FROM ckan/ckan-base:2.11.6
 
 # CKAN 2.11 Debian base uses a two-user model (ckan-sys owns /usr/local + the app
 # dir; ckan runs the process). Install as root, drop back to ckan at the end.
