@@ -79,7 +79,7 @@ pip3 install -e git+https://github.com/jqnatividad/ckanext-officedocs.git@b936b8
 # SAML2
 # pysaml2 shells out to the xmlsec1 binary for XML signing
 apt-get update && apt-get install -y --no-install-recommends xmlsec1
-pip3 install -e git+https://github.com/keitaroinc/ckanext-saml2auth.git@53180596388ed458cd7a03c422568135c40fc7fd#egg=ckanext-saml2auth
+pip3 install -e git+https://github.com/salsadigitalauorg/ckanext-saml2auth.git@salsa-1.4.0#egg=ckanext-saml2auth
 
 ## DBCA Project ##
 
