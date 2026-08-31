@@ -110,9 +110,6 @@ machine. This happens whenever Pygmy is running, even without ever using
 ## How to implement the security patch for the CKAN
 - Run the GH action to generate the image, if not already done. see this https://salsadigital.atlassian.net/wiki/spaces/CKAN/pages/3499819055/CKAN+patching#Upgrade-Salsa-CKAN-Base-Images.
 - Update the image version with latest in below files.
-   - .env.dbca
-   - .env.example
-   - README.md
    - ckan/Dockerfile
    - ckan/Dockerfile.dev
 - Run the build and make sure all patches are applied cleanly ckan/patches
