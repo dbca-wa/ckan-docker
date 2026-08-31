@@ -8,18 +8,18 @@ pip3 install supervisor
 ## CKAN Core extensions ##
 
 # Archiver
-pip3 install -e git+https://github.com/ckan/ckanext-archiver.git@986f25d91013a9bfdbc55b60ec55a1676e8eeab3#egg=ckanext-archiver
+pip3 install -e git+https://github.com/ckan/ckanext-archiver.git@3876e19beaf17eb7492bb228b2657498339b4849#egg=ckanext-archiver
 pip3 install -r ${SRC_DIR}/ckanext-archiver/requirements.txt
 
 # DCAT
-pip3 install -e git+https://github.com/ckan/ckanext-dcat.git@62e64d596fd051e3902c412b770a5ec3500dc967#egg=ckanext-dcat
+pip3 install -e git+https://github.com/ckan/ckanext-dcat.git@v2.4.4#egg=ckanext-dcat
 pip3 install -r ${SRC_DIR}/ckanext-dcat/requirements.txt
 
 # Geoview
 pip3 install -e git+https://github.com/ckan/ckanext-geoview.git@665f54a2ee0667a043b32f35c59eea49d9af9c30#egg=ckanext-geoview
 
 # Hierarchy
-pip3 install -e git+https://github.com/ckan/ckanext-hierarchy.git@5428e927995e29ddd7cfa130dc9670d4c4889f19#egg=ckanext-hierarchy
+pip3 install -e git+https://github.com/ckan/ckanext-hierarchy.git@53c1ee74805d79aef7c9c01cc513eb881cb8928f#egg=ckanext-hierarchy
 pip3 install -r ${SRC_DIR}/ckanext-hierarchy/requirements.txt
 
 # Pages
@@ -60,12 +60,12 @@ apt-get update && apt-get install -y --no-install-recommends \
     libgeos-dev \
     libproj-dev \
     proj-bin
-pip3 install -e git+https://github.com/ckan/ckanext-spatial.git@460d7053cf60c1c2b30a953c60f5baf8f5ac821f#egg=ckanext-spatial
+pip3 install -e git+https://github.com/ckan/ckanext-spatial.git@v2.3.2#egg=ckanext-spatial
 
 pip3 install -r ${SRC_DIR}/ckanext-spatial/requirements.txt
 
 # XLoader
-pip3 install -e git+https://github.com/ckan/ckanext-xloader.git@2.3.1#egg=ckanext-xloader
+pip3 install -e git+https://github.com/ckan/ckanext-xloader.git@2.4.0#egg=ckanext-xloader
 pip3 install -r ${SRC_DIR}/ckanext-xloader/requirements.txt
 
 
