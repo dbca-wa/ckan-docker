@@ -24,7 +24,7 @@ jobs:
       security-events: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Log in to the Container registry
         uses: docker/login-action@v4
@@ -32,6 +32,19 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Pin the ckanext-dbca ref per build. Release refs (master branch or any
+      # git tag) use the CKANEXT_DBCA_REF repo variable — set it to an immutable
+      # tag/SHA at release time — falling back to master if unset. Everything else
+      # (develop and feature branches) tracks the develop branch.
+      - name: Determine ckanext-dbca ref
+        id: dbca_ref
+        run: |
+          if [ "${{ github.ref_type }}" = "tag" ] || [ "${{ github.ref_name }}" = "master" ]; then
+            echo "ref=${{ vars.CKANEXT_DBCA_REF || 'master' }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "ref=develop" >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Extract metadata (tags, labels) for Docker ckan image
         id: meta_ckan
@@ -52,6 +65,17 @@ jobs:
           file: ./ckan/Dockerfile
           push: true
           tags: ${{ steps.meta_ckan.outputs.tags }}
+          build-args: |
+            CKANEXT_DBCA_REF=${{ steps.dbca_ref.outputs.ref }}
+
+      # meta_ckan.outputs.tags is a newline-separated list that can contain
+      # multiple tags (e.g. on a tag push). Resolve a single concrete image ref
+      # for the worker's `ckan` build-context (FROM ckan) and the Trivy scan below.
+      - name: Extract first tag
+        id: extract_first_tag
+        env:
+          CKAN_TAGS: ${{ steps.meta_ckan.outputs.tags }}
+        run: echo "first_tag=$(echo "$CKAN_TAGS" | head -n1)" >> "$GITHUB_OUTPUT"
 
       - name: CKAN Worker Build and push Docker image
         uses: docker/build-push-action@v7
@@ -60,14 +84,10 @@ jobs:
           file: ./ckan/Dockerfile.worker
           push: true
           tags: ${{ steps.meta_ckan_worker.outputs.tags }}
-          build-args: CKAN_IMAGE=${{ steps.meta_ckan.outputs.tags }}
-
-      - name: Extract first tag
-        id: extract_first_tag
-        run: echo "first_tag=$(echo ${{ steps.meta_ckan.outputs.tags }} | cut -d ',' -f 1)" >> $GITHUB_OUTPUT
+          build-contexts: ckan=docker-image://${{ steps.extract_first_tag.outputs.first_tag }}
 
       - name: Use first tag
-        run: echo "Using image ref ghcr.io/dbca-wa/ckan-docker-ckan:${{ steps.extract_first_tag.outputs.first_tag }}"
+        run: echo "Using CKAN image ref ${{ steps.extract_first_tag.outputs.first_tag }}"
 
       - name: Run Trivy vuln scanner on CKAN image
         uses: aquasecurity/trivy-action@0.35.0
@@ -78,6 +98,11 @@ jobs:
           image-ref: ${{ steps.extract_first_tag.outputs.first_tag }}
           vuln-type: "os,library"
           severity: "HIGH,CRITICAL"
+          # Skip OS packages with no upstream fix available (they reappear once
+          # Debian ships one)
+          ignore-unfixed: "true"
+          # Without this the severity filter above is not applied to SARIF output
+          limit-severities-for-sarif: "true"
           format: "sarif"
           output: "trivy-results.sarif"
 

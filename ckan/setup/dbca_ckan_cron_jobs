@@ -1,7 +1,7 @@
 # Crontab for CKAN cron jobs
 # 8am task to schedule embargo datasets to public visibility
-0 8 * * * /usr/bin/ckan -c /srv/app/config/dbca.ini dbca scheduled_datasets
+0 8 * * * /usr/local/bin/ckan -c /srv/app/config/dbca.ini dbca scheduled_datasets
 # 8am task to send CKAN email notifications
-0 8 * * * /usr/bin/ckan -c /srv/app/config/dbca.ini notify send_emails
+0 8 * * * /usr/local/bin/ckan -c /srv/app/config/dbca.ini notify send_emails
 # Midnight dbca logs maintenance
 0 0 * * * psql $CKAN_SQLALCHEMY_URL -f /srv/app/dbca_logs_maintenance.sql
