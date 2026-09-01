@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Latest pip before installing anything below
+pip3 install -U pip
+
 ## Process management ##
 # supervisor runs the CKAN job workers (not shipped by the Debian base). Installed
 # here so the worker image and the shared dev site-packages volume both have it.
@@ -87,3 +90,6 @@ pip3 install -e git+https://github.com/salsadigitalauorg/ckanext-saml2auth.git@s
 # Ref is build-time configurable so releases can pin an immutable tag/SHA instead
 # of a moving branch. Defaults to develop for local/dev builds; CI sets it per branch.
 pip3 install -e git+https://github.com/dbca-wa/ckanext-dbca.git@${CKANEXT_DBCA_REF:-develop}#egg=ckanext-dbca
+
+## Project-level pins (see dbca_requirements.txt) ##
+pip3 install -r "$(dirname "$0")/dbca_requirements.txt"
