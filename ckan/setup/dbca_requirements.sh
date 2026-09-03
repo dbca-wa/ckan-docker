@@ -87,9 +87,10 @@ pip3 install -e git+https://github.com/salsadigitalauorg/ckanext-saml2auth.git@s
 ## DBCA Project ##
 
 # DBCA
-# Ref is build-time configurable so releases can pin an immutable tag/SHA instead
-# of a moving branch. Defaults to develop for local/dev builds; CI sets it per branch.
-pip3 install -e git+https://github.com/dbca-wa/ckanext-dbca.git@${CKANEXT_DBCA_REF:-develop}#egg=ckanext-dbca
+# Pinned to an immutable SHA like every other extension above, so the production
+# image is reproducible. The dev image overrides CKANEXT_DBCA_REF to develop
+# (see Dockerfile.dev) so local work tracks the branch.
+pip3 install -e git+https://github.com/dbca-wa/ckanext-dbca.git@${CKANEXT_DBCA_REF:-7414d3a90ec365b60e575c4bdc40c736d04a99a2}#egg=ckanext-dbca
 
 ## Project-level pins (see dbca_requirements.txt) ##
 pip3 install -r "$(dirname "$0")/dbca_requirements.txt"
