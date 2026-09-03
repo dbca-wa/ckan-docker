@@ -35,13 +35,14 @@ jobs:
 
       # Pin the ckanext-dbca ref per build. Release refs (master branch or any
       # git tag) use the CKANEXT_DBCA_REF repo variable — set it to an immutable
-      # tag/SHA at release time — falling back to master if unset. Everything else
-      # (develop and feature branches) tracks the develop branch.
+      # tag/SHA at release time — falling back to ckanext-dbca's release branch,
+      # main, if unset. Everything else (develop and feature branches) tracks the
+      # develop branch.
       - name: Determine ckanext-dbca ref
         id: dbca_ref
         run: |
           if [ "${{ github.ref_type }}" = "tag" ] || [ "${{ github.ref_name }}" = "master" ]; then
-            echo "ref=${{ vars.CKANEXT_DBCA_REF || 'master' }}" >> "$GITHUB_OUTPUT"
+            echo "ref=${{ vars.CKANEXT_DBCA_REF || 'main' }}" >> "$GITHUB_OUTPUT"
           else
             echo "ref=develop" >> "$GITHUB_OUTPUT"
           fi
