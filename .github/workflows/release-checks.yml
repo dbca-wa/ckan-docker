@@ -7,6 +7,10 @@ on:
   pull_request:
     branches:
       - master
+  # TEMPORARY: exercise the script in CI while PR #33's conflict blocks pull_request runs
+  push:
+    branches:
+      - test/release-checks-workflow
 
 permissions:
   contents: read
