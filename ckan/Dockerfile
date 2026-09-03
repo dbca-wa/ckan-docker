@@ -17,10 +17,8 @@ RUN apt-get update && \
 
 # ===== DBCA: install extensions (expensive layer; changes rarely vs config) =====
 # dbca_requirements.sh handles its own apt/pip deps, incl. xmlsec1 for saml2auth.
-# CKANEXT_DBCA_REF pins the ckanext-dbca git ref; CI passes a tag/SHA for releases
-# so master builds don't track a moving branch (defaults to develop for local builds).
-ARG CKANEXT_DBCA_REF=develop
-ENV CKANEXT_DBCA_REF=${CKANEXT_DBCA_REF}
+# ckanext-dbca is pinned to a SHA in dbca_requirements.sh, like every other
+# extension; nothing to override here.
 COPY setup/dbca_requirements.sh setup/dbca_requirements.txt ${APP_DIR}
 RUN chmod +x ${APP_DIR}/dbca_requirements.sh && \
     ${APP_DIR}/dbca_requirements.sh
