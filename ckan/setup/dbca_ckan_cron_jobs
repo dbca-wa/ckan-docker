@@ -9,4 +9,6 @@
 # Send CKAN email notifications -- 00:00 UTC = 08:00 AWST
 0 0 * * * /usr/local/bin/ckan -c /srv/app/config/dbca.ini notify send_emails
 # dbca logs maintenance -- 16:00 UTC = 00:00 AWST
+# Only does anything while ckanext.dbca.enable_db_logging is true; it is off by
+# default, so dbca_logs is normally empty and this is a no-op.
 0 16 * * * /usr/bin/psql $CKAN_SQLALCHEMY_URL -f /srv/app/dbca_logs_maintenance.sql
