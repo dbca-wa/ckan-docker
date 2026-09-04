@@ -8,6 +8,10 @@ pip3 install -U pip
 # here so the worker image and the shared dev site-packages volume both have it.
 pip3 install supervisor
 
+## Database client ##
+# psql for the log-maintenance cron job and for reaching the DB from a container.
+apt-get update && apt-get install -y --no-install-recommends postgresql-client
+
 ## CKAN Core extensions ##
 
 # Archiver
