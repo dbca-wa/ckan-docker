@@ -1,0 +1,6 @@
+{
+    // src/ckanext-dbca is its own git checkout, two levels below the workspace
+    // root. The default repository scan depth of 1 never finds it, so it does
+    // not appear in Source Control.
+    "git.repositoryScanMaxDepth": 2
+}
