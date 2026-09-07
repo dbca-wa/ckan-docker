@@ -56,8 +56,10 @@ ahead=$(git -C "$work/ext" rev-list --count origin/main..origin/develop)
 if [ "$ahead" -gt 0 ]; then
   fail "ckanext-dbca develop is $ahead commit(s) ahead of main. There is unreleased
       extension work — check for an open develop -> main PR and release it first:"
+  # sed, not `head -5`: head closes the pipe early, and under `set -o pipefail` the
+  # SIGPIPE that gives git log aborts the script before it prints the summary below.
   git -C "$work/ext" log --oneline --no-decorate origin/main..origin/develop |
-    head -5 | sed 's/^/        /' >&2
+    sed -n '1,5s/^/        /p' >&2
 else
   pass "ckanext-dbca develop is level with main"
 fi
