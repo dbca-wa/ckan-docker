@@ -1,7 +1,14 @@
-# Crontab for CKAN cron jobs
-# 8am task to schedule embargo datasets to public visibility
-0 8 * * * /usr/local/bin/ckan -c /srv/app/config/dbca.ini dbca scheduled_datasets
-# 8am task to send CKAN email notifications
-0 8 * * * /usr/local/bin/ckan -c /srv/app/config/dbca.ini notify send_emails
-# Midnight dbca logs maintenance
-0 0 * * * psql $CKAN_SQLALCHEMY_URL -f /srv/app/dbca_logs_maintenance.sql
+# Reference only, not deployed. The real schedule is the Kubernetes CronJobs in
+# the `ckan` namespace (embargo-dataset, email-notification, log-maintenance),
+# running the ckan-worker image. Keep this file in step with them: schedules
+# below are UTC to match, since the CronJobs have no spec.timeZone.
+# CronJob pods also need CKAN___SECRET_KEY and runAsUser: 503, or the command aborts.
+
+# Schedule embargo datasets to public visibility -- 00:00 UTC = 08:00 AWST
+0 0 * * * /usr/local/bin/ckan -c /srv/app/config/dbca.ini dbca scheduled_datasets
+# Send CKAN email notifications -- 00:00 UTC = 08:00 AWST
+0 0 * * * /usr/local/bin/ckan -c /srv/app/config/dbca.ini notify send_emails
+# dbca logs maintenance -- 16:00 UTC = 00:00 AWST
+# Only does anything while ckanext.dbca.enable_db_logging is true; it is off by
+# default, so dbca_logs is normally empty and this is a no-op.
+0 16 * * * /usr/bin/psql $CKAN_SQLALCHEMY_URL -f /srv/app/dbca_logs_maintenance.sql

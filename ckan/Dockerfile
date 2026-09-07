@@ -49,7 +49,7 @@ RUN chown -R ckan:ckan-sys $APP_DIR
 # Drop build-only toolchain, -dev packages (from the base and dbca_requirements.sh)
 # and pip. Keeps runtime libs the extensions need, wget (compose healthcheck), patch (step below).
 # Production only: Dockerfile.dev keeps the toolchain for runtime pip installs.
-RUN keep="libpq5 file libmagic1 libgeos-c1v5 libproj25 xmlsec1 wget patch"; \
+RUN keep="libpq5 postgresql-client file libmagic1 libgeos-c1v5 libproj25 xmlsec1 wget patch"; \
     for p in $keep; do dpkg -s "$p" >/dev/null 2>&1 && apt-mark manual "$p"; done; \
     drop=""; for p in git unzip g++ gcc cpp binutils libtool libpq-dev libgeos-dev libproj-dev proj-bin libc6-dev linux-libc-dev libssl-dev; do \
         dpkg -s "$p" >/dev/null 2>&1 && drop="$drop $p"; done; \
