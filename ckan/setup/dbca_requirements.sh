@@ -94,7 +94,7 @@ pip3 install -e git+https://github.com/salsadigitalauorg/ckanext-saml2auth.git@s
 # Pinned to an immutable SHA like every other extension above, so the production
 # image is reproducible. The dev image overrides CKANEXT_DBCA_REF to develop
 # (see Dockerfile.dev) so local work tracks the branch.
-pip3 install -e git+https://github.com/dbca-wa/ckanext-dbca.git@${CKANEXT_DBCA_REF:-1161b3000b65407f70d21954868faccf44e28b2a}#egg=ckanext-dbca
+pip3 install -e git+https://github.com/dbca-wa/ckanext-dbca.git@${CKANEXT_DBCA_REF:-62e735d1a870a076de4a87673961293cb3c5751d}#egg=ckanext-dbca
 
 ## Project-level pins (see dbca_requirements.txt) ##
 pip3 install -r "$(dirname "$0")/dbca_requirements.txt"
