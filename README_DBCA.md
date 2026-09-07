@@ -107,6 +107,34 @@ machine. This happens whenever Pygmy is running, even without ever using
 `docker-compose.pygmy.yml`. `docker-compose.dev.yml` blanks both vars for
 `ckan-dev-worker` to prevent it — leave that in place.
 
+## Releasing to master (ckanext-dbca pin)
+
+`ckan-docker` and `ckanext-dbca` ship together: master is built from a
+`develop -> master` release PR, and the image installs whatever ref
+`ckan/setup/dbca_requirements.sh` pins. A branch pin would mean a later rebuild,
+e.g. for a CKAN security patch, silently picks up whatever landed on that branch
+since, so master must ship a released tag.
+
+1. Release the extension first — see "Releasing a new version of ckanext-dbca" in
+   the ckanext-dbca README: merge its `develop -> main` PR and tag the merge commit
+   (`1.0.0`, no `v` prefix).
+
+2. Pin that tag in `ckan/setup/dbca_requirements.sh`:
+
+       pip3 install -e git+https://github.com/dbca-wa/ckanext-dbca.git@${CKANEXT_DBCA_REF:-1.0.0}#egg=ckanext-dbca
+
+3. Check it before raising the release PR:
+
+       .github/scripts/check-ckanext-dbca-pin.sh
+
+   It verifies the pin is not a branch, is reachable from ckanext-dbca `main`, and
+   that the extension's `develop` is level with `main`. The same script runs as the
+   "Release checks" workflow on every PR into master.
+
+Only the production image uses the pin. `Dockerfile.dev` sets
+`CKANEXT_DBCA_REF=develop`, so the dev image tracks the extension's develop branch,
+and local work uses the checkout mounted at `src/ckanext-dbca` regardless.
+
 ## How to implement the security patch for the CKAN
 - Run the GH action to generate the image, if not already done. see this https://salsadigital.atlassian.net/wiki/spaces/CKAN/pages/3499819055/CKAN+patching#Upgrade-Salsa-CKAN-Base-Images.
 - Update the image version with latest in below files.
