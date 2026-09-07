@@ -1,0 +1,23 @@
+name: Release checks
+
+# ckan-docker and ckanext-dbca ship together, and master is only built from a
+# develop -> master release PR. These checks make the extension pin an enforced
+# step of that PR rather than something to remember.
+on:
+  pull_request:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  ckanext-dbca-pin:
+    name: ckanext-dbca pin
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Check ckanext-dbca is pinned to a released ref
+        run: .github/scripts/check-ckanext-dbca-pin.sh

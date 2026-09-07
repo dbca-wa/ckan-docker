@@ -11,7 +11,7 @@
             "module": "pdb",
             "args": [
                 "-c continue",
-                "/usr/bin/ckan",
+                "/usr/local/bin/ckan",
                 "--config",
                 "/srv/app/config/dbca.ini",
                 "run",
@@ -28,7 +28,7 @@
             "module": "pdb",
             "args": [
                 "-c continue",
-                "/usr/bin/ckan",
+                "/usr/local/bin/ckan",
                 "--config",
                 "/srv/app/config/dbca.ini",
                 "jobs",
@@ -43,7 +43,7 @@
             "module": "pdb",
             "args": [
                 "-c continue",
-                "/usr/bin/ckan",
+                "/usr/local/bin/ckan",
                 "--config",
                 "/srv/app/config/dbca.ini",
                 "<CLI_COMMAND>"
