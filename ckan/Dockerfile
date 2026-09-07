@@ -1,4 +1,6 @@
-FROM ckan/ckan-base:2.11.6
+# ckan/ckan-base is published for linux/amd64 only; pin the platform so the build does
+# not resolve an arm64 manifest, and fail, on Apple Silicon.
+FROM --platform=linux/amd64 ckan/ckan-base:2.11.6
 
 # CKAN 2.11 Debian base uses a two-user model (ckan-sys owns /usr/local + the app
 # dir; ckan runs the process). Install as root, drop back to ckan at the end.
