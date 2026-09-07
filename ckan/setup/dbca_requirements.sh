@@ -46,6 +46,10 @@ apt-get update && apt-get install -y --no-install-recommends file unzip
 wget -O /tmp/qsv.zip https://github.com/dathere/qsv/releases/download/21.1.0/qsv-21.1.0-x86_64-unknown-linux-musl.zip
 unzip /tmp/qsv.zip -d /usr/local/bin
 rm /tmp/qsv.zip
+# dbca.ini points ckanext.qa.qsv_bin here, but the prerun step runs against
+# ckan.ini, which has no such setting and so checks the extension default of
+# /usr/bin/qsv. Link it so that check passes instead of logging an ERROR.
+ln -sf /usr/local/bin/qsv /usr/bin/qsv
 pip3 install -e git+https://github.com/ckan/ckanext-qa.git@a54141a4aa3056bc3c6bf597665c28a9f31e04a1#egg=ckanext-qa
 pip3 install -r ${SRC_DIR}/ckanext-qa/requirements.txt
 

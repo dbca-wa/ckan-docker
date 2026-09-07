@@ -89,7 +89,12 @@ if [ ! -f /tmp/container_ready ]; then
 
     if [[ $CKAN__PLUGINS == *"dbca"* ]]; then
         ckan -c $CKAN_INI db upgrade -p dbca
-        ckan -c $CKAN_INI dbca load_spatial_data
+        # The spatial data volume is only mounted on the worker; the loaded data
+        # lands in the shared database, so the web container has nothing to do
+        # here and would only log "Spatial data directory ... not found".
+        if [[ -n "$CKAN_WORKER" ]]; then
+            ckan -c $CKAN_INI dbca load_spatial_data
+        fi
     fi
 
     # Set the container as ready so the startup scripts are not run again
