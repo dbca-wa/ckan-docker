@@ -77,6 +77,10 @@
 	// Uncomment the next line if you want to keep your containers running after VS Code shuts down.
 	// "shutdownAction": "none",
 
+	// Runs on the host before the container is created: pre-pulls the amd64 CKAN base
+	// image so the CLI's platform-less preflight pull does not fail on Apple Silicon.
+	"initializeCommand": "${localWorkspaceFolder}/.devcontainer/pull-base-image.sh",
+
 	// Uncomment the next line to run commands after the container is created.
 	"postStartCommand": "${APP_DIR}/start_ckan_development.sh",
 
