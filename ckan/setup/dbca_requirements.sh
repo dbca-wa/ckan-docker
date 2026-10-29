@@ -23,7 +23,7 @@ pip3 install -e git+https://github.com/ckan/ckanext-dcat.git@v2.4.4#egg=ckanext-
 pip3 install -r ${SRC_DIR}/ckanext-dcat/requirements.txt
 
 # Geoview
-pip3 install -e git+https://github.com/ckan/ckanext-geoview.git@665f54a2ee0667a043b32f35c59eea49d9af9c30#egg=ckanext-geoview
+pip3 install -e git+https://github.com/ckan/ckanext-geoview.git@v0.3.2#egg=ckanext-geoview
 
 # Hierarchy
 pip3 install -e git+https://github.com/ckan/ckanext-hierarchy.git@53c1ee74805d79aef7c9c01cc513eb881cb8928f#egg=ckanext-hierarchy
@@ -33,7 +33,7 @@ pip3 install -r ${SRC_DIR}/ckanext-hierarchy/requirements.txt
 pip3 install -e git+https://github.com/ckan/ckanext-pages.git@28eba99ad85d3b9037f5aaddad1f083300c69041#egg=ckanext-pages
 
 # PDF View
-pip3 install -e git+https://github.com/ckan/ckanext-pdfview.git@071571546b99498f543ea0c34de44da3b9ac9d7b#egg=ckanext-pdfview
+pip3 install -e git+https://github.com/ckan/ckanext-pdfview.git@0.0.9#egg=ckanext-pdfview
 
 # QA
 # Install qsv dependency for extension ckanext-qa
@@ -76,21 +76,21 @@ pip3 install -e git+https://github.com/ckan/ckanext-spatial.git@v2.3.2#egg=ckane
 pip3 install -r ${SRC_DIR}/ckanext-spatial/requirements.txt
 
 # XLoader
-pip3 install -e git+https://github.com/ckan/ckanext-xloader.git@2.4.0#egg=ckanext-xloader
+pip3 install -e git+https://github.com/ckan/ckanext-xloader.git@2.6.0#egg=ckanext-xloader
 pip3 install -r ${SRC_DIR}/ckanext-xloader/requirements.txt
 
 
 ## 3rd Party ##
 # DOI
-pip3 install -e git+https://github.com/NaturalHistoryMuseum/ckanext-doi.git@v4.0.4#egg=ckanext-doi
+pip3 install -e git+https://github.com/NaturalHistoryMuseum/ckanext-doi.git@v4.0.5#egg=ckanext-doi
 
 # Office Docs
-pip3 install -e git+https://github.com/jqnatividad/ckanext-officedocs.git@b936b89b6f2c81c347f4a6cd7e6fa0762db53b33#egg=ckanext-officedocs
+pip3 install -e git+https://github.com/jqnatividad/ckanext-officedocs.git@v2.0.0#egg=ckanext-officedocs
 
 # SAML2
 # pysaml2 shells out to the xmlsec1 binary for XML signing
 apt-get update && apt-get install -y --no-install-recommends xmlsec1
-pip3 install -e git+https://github.com/salsadigitalauorg/ckanext-saml2auth.git@salsa-1.4.0#egg=ckanext-saml2auth
+pip3 install -e git+https://github.com/salsadigitalauorg/ckanext-saml2auth.git@salsa-1.5.0#egg=ckanext-saml2auth
 
 ## DBCA Project ##
 
