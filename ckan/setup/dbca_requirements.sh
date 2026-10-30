@@ -14,16 +14,22 @@ apt-get update && apt-get install -y --no-install-recommends postgresql-client
 
 ## CKAN Core extensions ##
 
+# Report
+pip3 install -e git+https://github.com/ckan/ckanext-report.git@5f25ae4e93597933520b6a76e8dbad9f5195f897#egg=ckanext-report
+pip3 install -r ${SRC_DIR}/ckanext-report/requirements.txt
+
 # Archiver
 pip3 install -e git+https://github.com/ckan/ckanext-archiver.git@3876e19beaf17eb7492bb228b2657498339b4849#egg=ckanext-archiver
-pip3 install -r ${SRC_DIR}/ckanext-archiver/requirements.txt
+# archiver's requirements.txt pulls ckanext-report from master, which pip applies as a
+# `git reset --hard` over the pinned checkout above (--exists-action does not stop it).
+grep -v "ckanext-report" ${SRC_DIR}/ckanext-archiver/requirements.txt | pip3 install -r /dev/stdin
 
 # DCAT
 pip3 install -e git+https://github.com/ckan/ckanext-dcat.git@v2.4.4#egg=ckanext-dcat
 pip3 install -r ${SRC_DIR}/ckanext-dcat/requirements.txt
 
 # Geoview
-pip3 install -e git+https://github.com/ckan/ckanext-geoview.git@665f54a2ee0667a043b32f35c59eea49d9af9c30#egg=ckanext-geoview
+pip3 install -e git+https://github.com/ckan/ckanext-geoview.git@v0.3.2#egg=ckanext-geoview
 
 # Hierarchy
 pip3 install -e git+https://github.com/ckan/ckanext-hierarchy.git@53c1ee74805d79aef7c9c01cc513eb881cb8928f#egg=ckanext-hierarchy
@@ -33,7 +39,7 @@ pip3 install -r ${SRC_DIR}/ckanext-hierarchy/requirements.txt
 pip3 install -e git+https://github.com/ckan/ckanext-pages.git@28eba99ad85d3b9037f5aaddad1f083300c69041#egg=ckanext-pages
 
 # PDF View
-pip3 install -e git+https://github.com/ckan/ckanext-pdfview.git@071571546b99498f543ea0c34de44da3b9ac9d7b#egg=ckanext-pdfview
+pip3 install -e git+https://github.com/ckan/ckanext-pdfview.git@0.0.9#egg=ckanext-pdfview
 
 # QA
 # Install qsv dependency for extension ckanext-qa
@@ -52,10 +58,6 @@ rm /tmp/qsv.zip
 ln -sf /usr/local/bin/qsv /usr/bin/qsv
 pip3 install -e git+https://github.com/ckan/ckanext-qa.git@a54141a4aa3056bc3c6bf597665c28a9f31e04a1#egg=ckanext-qa
 pip3 install -r ${SRC_DIR}/ckanext-qa/requirements.txt
-
-# Report
-pip3 install -e git+https://github.com/ckan/ckanext-report.git@5f25ae4e93597933520b6a76e8dbad9f5195f897#egg=ckanext-report --exists-action i
-pip3 install -r ${SRC_DIR}/ckanext-report/requirements.txt
 
 # Scheming
 pip3 install -e git+https://github.com/ckan/ckanext-scheming.git@release-3.1.0#egg=ckanext-scheming
@@ -76,21 +78,20 @@ pip3 install -e git+https://github.com/ckan/ckanext-spatial.git@v2.3.2#egg=ckane
 pip3 install -r ${SRC_DIR}/ckanext-spatial/requirements.txt
 
 # XLoader
-pip3 install -e git+https://github.com/ckan/ckanext-xloader.git@2.4.0#egg=ckanext-xloader
-pip3 install -r ${SRC_DIR}/ckanext-xloader/requirements.txt
+pip3 install -e git+https://github.com/ckan/ckanext-xloader.git@2.6.0#egg=ckanext-xloader
 
 
 ## 3rd Party ##
 # DOI
-pip3 install -e git+https://github.com/NaturalHistoryMuseum/ckanext-doi.git@v4.0.4#egg=ckanext-doi
+pip3 install -e git+https://github.com/NaturalHistoryMuseum/ckanext-doi.git@v4.0.5#egg=ckanext-doi
 
 # Office Docs
-pip3 install -e git+https://github.com/jqnatividad/ckanext-officedocs.git@b936b89b6f2c81c347f4a6cd7e6fa0762db53b33#egg=ckanext-officedocs
+pip3 install -e git+https://github.com/jqnatividad/ckanext-officedocs.git@v2.0.0#egg=ckanext-officedocs
 
 # SAML2
 # pysaml2 shells out to the xmlsec1 binary for XML signing
 apt-get update && apt-get install -y --no-install-recommends xmlsec1
-pip3 install -e git+https://github.com/salsadigitalauorg/ckanext-saml2auth.git@salsa-1.4.0#egg=ckanext-saml2auth
+pip3 install -e git+https://github.com/salsadigitalauorg/ckanext-saml2auth.git@salsa-1.5.0#egg=ckanext-saml2auth
 
 ## DBCA Project ##
 
@@ -98,7 +99,7 @@ pip3 install -e git+https://github.com/salsadigitalauorg/ckanext-saml2auth.git@s
 # Pinned to an immutable SHA like every other extension above, so the production
 # image is reproducible. The dev image overrides CKANEXT_DBCA_REF to develop
 # (see Dockerfile.dev) so local work tracks the branch.
-pip3 install -e git+https://github.com/dbca-wa/ckanext-dbca.git@${CKANEXT_DBCA_REF:-1.0.0}#egg=ckanext-dbca
+pip3 install -e git+https://github.com/dbca-wa/ckanext-dbca.git@${CKANEXT_DBCA_REF:-1.0.1}#egg=ckanext-dbca
 
 ## Project-level pins (see dbca_requirements.txt) ##
 pip3 install -r "$(dirname "$0")/dbca_requirements.txt"

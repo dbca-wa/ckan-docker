@@ -1,0 +1,14 @@
+diff --git a/ckanext/geoview/public/js/ol_preview.js b/ckanext/geoview/public/js/ol_preview.js
+--- a/ckanext/geoview/public/js/ol_preview.js
++++ b/ckanext/geoview/public/js/ol_preview.js
+@@ -123,6 +123,10 @@
+ 
+                 } else if (mapConfig.type == 'custom') {
+                     mapConfig.type = 'XYZ'
++                } else if (mapConfig.type == 'Stadia.StamenTerrain') {
++                    // DBCA: allow Stadia Stamen Terrain as an XYZ base map.
++                    mapConfig.type = 'XYZ'
++                    mapConfig.url = this.options.map_config['custom.url']
+                 } else {
+ 
+                     mapConfig.type = 'OSM'

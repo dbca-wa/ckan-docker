@@ -3,8 +3,6 @@
 #
 # setuptools: CKAN base pins <82 (ckan/ckan#9246).
 
-sqlparse==0.6.0  # CKAN pins 0.5.4 (CVEs, unfixed); nothing in CKAN imports it
-
 # Deliberately past pysaml2's pyopenssl cap (pip warns; install still succeeds).
 # The cap guards pyOpenSSL APIs pysaml2 uses only for cert-chain verification
 # (verify_cert, off by default) and cert generation - neither is used here. The
