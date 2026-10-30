@@ -14,9 +14,15 @@ apt-get update && apt-get install -y --no-install-recommends postgresql-client
 
 ## CKAN Core extensions ##
 
+# Report
+pip3 install -e git+https://github.com/ckan/ckanext-report.git@5f25ae4e93597933520b6a76e8dbad9f5195f897#egg=ckanext-report
+pip3 install -r ${SRC_DIR}/ckanext-report/requirements.txt
+
 # Archiver
 pip3 install -e git+https://github.com/ckan/ckanext-archiver.git@3876e19beaf17eb7492bb228b2657498339b4849#egg=ckanext-archiver
-pip3 install -r ${SRC_DIR}/ckanext-archiver/requirements.txt
+# archiver's requirements.txt pulls ckanext-report from master, which pip applies as a
+# `git reset --hard` over the pinned checkout above (--exists-action does not stop it).
+grep -v "ckanext-report" ${SRC_DIR}/ckanext-archiver/requirements.txt | pip3 install -r /dev/stdin
 
 # DCAT
 pip3 install -e git+https://github.com/ckan/ckanext-dcat.git@v2.4.4#egg=ckanext-dcat
@@ -52,10 +58,6 @@ rm /tmp/qsv.zip
 ln -sf /usr/local/bin/qsv /usr/bin/qsv
 pip3 install -e git+https://github.com/ckan/ckanext-qa.git@a54141a4aa3056bc3c6bf597665c28a9f31e04a1#egg=ckanext-qa
 pip3 install -r ${SRC_DIR}/ckanext-qa/requirements.txt
-
-# Report
-pip3 install -e git+https://github.com/ckan/ckanext-report.git@5f25ae4e93597933520b6a76e8dbad9f5195f897#egg=ckanext-report --exists-action i
-pip3 install -r ${SRC_DIR}/ckanext-report/requirements.txt
 
 # Scheming
 pip3 install -e git+https://github.com/ckan/ckanext-scheming.git@release-3.1.0#egg=ckanext-scheming
