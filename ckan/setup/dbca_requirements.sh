@@ -77,7 +77,6 @@ pip3 install -r ${SRC_DIR}/ckanext-spatial/requirements.txt
 
 # XLoader
 pip3 install -e git+https://github.com/ckan/ckanext-xloader.git@2.6.0#egg=ckanext-xloader
-pip3 install -r ${SRC_DIR}/ckanext-xloader/requirements.txt
 
 
 ## 3rd Party ##
