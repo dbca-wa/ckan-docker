@@ -45,7 +45,7 @@ then
         supervisord --configuration /etc/supervisord.conf
     else
         # Start uwsgi
-        uwsgi -i $APP_DIR/config/uwsgi.ini
+        exec uwsgi -i $APP_DIR/config/uwsgi.ini
     fi
 else
   echo "[prerun] failed...not starting CKAN."
