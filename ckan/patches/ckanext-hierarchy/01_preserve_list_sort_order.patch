@@ -1,0 +1,17 @@
+diff --git a/ckanext/hierarchy/helpers.py b/ckanext/hierarchy/helpers.py
+index ed6bd2b..d700177 100644
+--- a/ckanext/hierarchy/helpers.py
++++ b/ckanext/hierarchy/helpers.py
+@@ -35,6 +35,12 @@ def group_tree_filter(organizations, group_tree_list, highlight=False):
+     for group in group_tree_highlight(organizations, group_tree_list):
+         traverse_select_highlighted(group, filtered_tree, highlight)
+ 
++    # DBCA: keep the order of the list passed in (it carries the ?sort= order
++    # from group_list / organization_list) instead of the tree's A-Z order.
++    position = {o.get('name'): i for i, o in enumerate(organizations)}
++    filtered_tree.sort(
++        key=lambda node: position.get(node.get('name'), len(position)))
++
+     return filtered_tree
+ 
+ 
