@@ -95,3 +95,37 @@ jobs:
         uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: "trivy-results.sarif"
+
+      - name: Extract metadata (tags, labels) for Docker solr image
+        id: meta_solr
+        uses: docker/metadata-action@v6
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-solr
+
+      - name: Solr Build and push Docker image
+        uses: docker/build-push-action@v7
+        with:
+          context: ./solr
+          push: true
+          tags: ${{ steps.meta_solr.outputs.tags }}
+
+      - name: Run Trivy vuln scanner on Solr image
+        uses: aquasecurity/trivy-action@0.35.0
+        env:
+          TRIVY_DB_REPOSITORY: public.ecr.aws/aquasecurity/trivy-db
+        with:
+          scan-type: "image"
+          image-ref: ${{ fromJSON(steps.meta_solr.outputs.json).tags[0] }}
+          vuln-type: "os,library"
+          severity: "HIGH,CRITICAL"
+          ignore-unfixed: "true"
+          limit-severities-for-sarif: "true"
+          format: "sarif"
+          output: "trivy-results-solr.sarif"
+
+      - name: Upload Solr Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v4
+        with:
+          sarif_file: "trivy-results-solr.sarif"
+          # Distinct category so this upload does not replace the CKAN results
+          category: trivy-solr
